@@ -74,7 +74,6 @@ public class PepseGameManager extends GameManager{
                 inputListener, imageReader);
 
         // infinite world:
-
         setCamera(new Camera(avatar, Vector2.ZERO,
                 windowController.getWindowDimensions(),
                 windowController.getWindowDimensions()));

@@ -33,7 +33,7 @@ public class Sun{
                 1F,
                 0F,
                 Transition.LINEAR_INTERPOLATOR_FLOAT,
-                cycleLength/2,
+                cycleLength,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                 null);
         gameObjectCollection.addGameObject(sun, sunLayer);
