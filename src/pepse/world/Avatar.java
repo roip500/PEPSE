@@ -21,6 +21,8 @@ public class Avatar extends GameObject {
     private static final int USING_LEFT = 0;
     private int WHICH_LEG_TO_USE;
 
+    //TODO: fix the names of the arguments
+
     private static final int JUMP_SPEED = 300;
     private static final int FLY_SPEED = 200;
     private static final float HIGHEST_ENERGY = 100F;
