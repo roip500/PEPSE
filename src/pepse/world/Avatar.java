@@ -10,7 +10,7 @@ import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
 
-public class Avatar extends GameObject{
+public class Avatar extends GameObject {
 
     private static final int JUMP_SPEED = 300;
     private static final int FLY_SPEED = 200;
