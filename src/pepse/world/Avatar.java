@@ -99,11 +99,10 @@ public class Avatar extends GameObject{
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if(collision.getNormal() == Vector2.DOWN){
-            yMovementDir = Vector2.ZERO;
-            transform().setVelocityY(0);
-            inTheAir = false;
-        }
+        //TODO: if the other object is bellow our object only then stop the y velocity
+        yMovementDir = Vector2.ZERO;
+        transform().setVelocityY(0);
+        inTheAir = false;
     }
 
     /**
