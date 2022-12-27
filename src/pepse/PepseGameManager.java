@@ -18,6 +18,7 @@ import pepse.world.Terrain;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
 import pepse.world.daynight.Night;
+import pepse.world.trees.Tree;
 
 import java.awt.*;
 
@@ -66,6 +67,9 @@ public class PepseGameManager extends GameManager{
         Terrain terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS, windowController.getWindowDimensions()
                 ,777);
         terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
+
+        Tree tree = new Tree(gameObjects(),Layer.STATIC_OBJECTS, 12, terrain);
+        tree.createInRange(0, (int) windowController.getWindowDimensions().x(), terrain);
 
         // create avatar:
         float x = windowController.getWindowDimensions().x()/2;
