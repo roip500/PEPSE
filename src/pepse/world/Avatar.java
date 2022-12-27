@@ -10,39 +10,58 @@ import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
 
-public class Avatar extends GameObject{
+public class Avatar extends GameObject {
+
+    private final Renderable STANDING;
+    private final Renderable FLYING_UP;
+    private final Renderable FLYING_SIDES;
+    private final Renderable RUN_LEFT;
+    private final Renderable RUN_RIGHT;
+    private static final int USING_RIGHT = 1;
+    private static final int USING_LEFT = 0;
+    private int WHICH_LEG_TO_USE;
+
+    //TODO: fix the names of the arguments
 
     private static final int JUMP_SPEED = 300;
     private static final int FLY_SPEED = 200;
     private static final float HIGHEST_ENERGY = 100F;
     private static final int GRAVITY_EFFECT= 5;
     private static final int WALKING_SPEED = 300;
-    private static final int AVATAR_SIZE = 40;
+    private static final int AVATAR_SIZE = 60;
     private static final float ENERGY_CHANGE = 0.5F;
     private final UserInputListener inputListener;
     Vector2 yMovementDir;
     private boolean inTheAir;
     private float energy;
-    private final ImageReader imageReader;
 
     /**
-     * Construct a new GameObject instance.
-     *
+     * Constructs the avatar.
      * @param topLeftCorner Position of the object, in window coordinates (pixels).
      *                      Note that (0,0) is the top-left corner of the window.
-     * @param dimensions    Width and height in window coordinates.
-     * @param renderable    The renderable representing the object. Can be null, in which case
-     *                      the GameObject will not be rendered.
+     * @param dimensions Width and height in window coordinates.
+     * @param renderable the starting image for the avatar
+     * @param inputListener allows the gameObject to get input from the keyboard
+     * @param flyingUp the image that will be used when the avatar flies
+     * @param flyingSides the image that will be used when the avatar flies and moves side-ways
+     * @param runLeft the image that will be used when the avatar walks - 1
+     * @param runRight the image that will be used when the avatar walks - 2
      */
     public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
-                  UserInputListener inputListener, ImageReader imageReader) {
+                  UserInputListener inputListener, Renderable flyingUp, Renderable flyingSides,
+                  Renderable runLeft, Renderable runRight) {
         super(topLeftCorner, dimensions, renderable);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         this.inputListener = inputListener;
-        this.imageReader = imageReader;
         this.energy = HIGHEST_ENERGY;
         this.inTheAir = false;
         this.yMovementDir = Vector2.ZERO;
+        this.STANDING = renderable;
+        this.FLYING_UP = flyingUp;
+        this.FLYING_SIDES = flyingSides;
+        this.RUN_LEFT= runLeft;
+        this.RUN_RIGHT= runRight;
+        this.WHICH_LEG_TO_USE = 0;
     }
 
     /**
@@ -57,6 +76,15 @@ public class Avatar extends GameObject{
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        setVelocityX();
+        setVelocityY();
+        setImage();
+    }
+
+    /**
+     * sets the velocity of the avatar in the x vector
+     */
+    private void setVelocityX(){
         Vector2 movementDir = Vector2.ZERO;
         if(inputListener.isKeyPressed(KeyEvent.VK_LEFT)) {
             movementDir = movementDir.add(Vector2.LEFT);
@@ -65,6 +93,12 @@ public class Avatar extends GameObject{
             movementDir = movementDir.add(Vector2.RIGHT);
         }
         transform().setVelocityX(movementDir.mult(WALKING_SPEED).x());
+    }
+
+    /**
+     * sets the velocity of the avatar in the y vector
+     */
+    private void setVelocityY(){
         if(inTheAir){
             if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
                     inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && energy > 0){
@@ -86,6 +120,48 @@ public class Avatar extends GameObject{
         }
         if(getVelocity().y() == 0 && energy < HIGHEST_ENERGY){
             energy += ENERGY_CHANGE;
+        }
+    }
+
+    /**
+     * sets the image of the avatar
+     */
+    private void setImage(){
+        if(getVelocity().x() > 0){
+            if(inTheAir){
+                renderer().setRenderable(FLYING_SIDES);
+            }
+            else if(this.WHICH_LEG_TO_USE == USING_LEFT){
+                this.WHICH_LEG_TO_USE = USING_RIGHT;
+                renderer().setRenderable(RUN_RIGHT);
+            }
+            else{
+                this.WHICH_LEG_TO_USE = USING_LEFT;
+                renderer().setRenderable(RUN_LEFT);
+            }
+            renderer().setIsFlippedHorizontally(false);
+        }
+        else if(getVelocity().x() < 0){
+            if(inTheAir){
+                renderer().setRenderable(FLYING_SIDES);
+            }
+            else if(this.WHICH_LEG_TO_USE == USING_LEFT){
+                this.WHICH_LEG_TO_USE = USING_RIGHT;
+                renderer().setRenderable(RUN_RIGHT);
+            }
+            else{
+                this.WHICH_LEG_TO_USE = USING_LEFT;
+                renderer().setRenderable(RUN_LEFT);
+            }
+            renderer().setIsFlippedHorizontally(true);
+        }
+        else{
+            if(getVelocity().y() != 0){
+                renderer().setRenderable(FLYING_UP);
+            }
+            else{
+                renderer().setRenderable(STANDING);
+            }
         }
     }
 
@@ -119,9 +195,13 @@ public class Avatar extends GameObject{
                                 int layer, Vector2 topLeftCorner,
                                 UserInputListener inputListener,
                                 ImageReader imageReader){
-        Renderable avatarImage = imageReader.readImage("assets/ball.png",true);
+        Renderable standingImg = imageReader.readImage("assets/standing.png",true);
+        Renderable flyingUpImg = imageReader.readImage("assets/flying-up.png",true);
+        Renderable flyingSidesImg = imageReader.readImage("assets/flying-sides.png",true);
+        Renderable runLeftImg = imageReader.readImage("assets/running-left.png",true);
+        Renderable runRightImg = imageReader.readImage("assets/running-right.png",true);
         Avatar avatar = new Avatar(Vector2.ZERO, new Vector2(AVATAR_SIZE, AVATAR_SIZE),
-                avatarImage, inputListener, imageReader);
+                standingImg, inputListener, flyingUpImg, flyingSidesImg, runLeftImg, runRightImg);
         avatar.setCenter(topLeftCorner);
         gameObjects.addGameObject(avatar, layer);
         return avatar;
