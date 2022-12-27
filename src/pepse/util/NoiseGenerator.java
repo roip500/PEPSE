@@ -71,10 +71,10 @@ public class NoiseGenerator {
         return value / initialSize;
     }
 
-    public double noise(double x, double y, double z) {
-        double value = 0.0;
-        double size = default_size;
-        double initialSize = size;
+    public float noise(float x, float y, float z) {
+        float value = 0.0f;
+        float size = default_size;
+        float initialSize = size;
 
         while (size >= 1) {
             value += smoothNoise((x / size), (y / size), (z / size)) * size;
@@ -84,10 +84,10 @@ public class NoiseGenerator {
         return value / initialSize;
     }
 
-    public double noise(double x, double y) {
-        double value = 0.0;
-        double size = default_size;
-        double initialSize = size;
+    public float noise(float x, float y) {
+        float value = 0.0f;
+        float size = default_size;
+        float initialSize = size;
 
         while (size >= 1) {
             value += smoothNoise((x / size), (y / size), (0f / size)) * size;

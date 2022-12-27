@@ -18,7 +18,7 @@ public class Terrain {
     private int seed;
     private static final int RANDOM_RANGE = 256;
     private static final int TERRAIN_DEPTH = 20;
-    private static final int NOISE_MULTIPLIER = 75;
+    private static final int NOISE_MULTIPLIER = 150;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
 
     private static int[] permutation = new int[RANDOM_RANGE];
@@ -37,7 +37,7 @@ public class Terrain {
     }
 
     public float GroundHeightAt(float x) {
-        float noiseReturn = noiseGenerator.noise(x);
+        float noiseReturn = noiseGenerator.noise(x/15, 200,200);
         return (windowDimensions.y() - noiseReturn * NOISE_MULTIPLIER) + 350;
     }
 

@@ -64,7 +64,7 @@ public class PepseGameManager extends GameManager{
 
         // create terrain:
         Terrain terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS, windowController.getWindowDimensions()
-                ,123);
+                ,777);
         terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
 
         // create avatar:
