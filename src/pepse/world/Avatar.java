@@ -24,9 +24,9 @@ public class Avatar extends GameObject {
     //TODO: fix the names of the arguments
 
     private static final int JUMP_SPEED = 300;
-    private static final int FLY_SPEED = 200;
+    private static final int FLY_SPEED = 300;
     private static final float HIGHEST_ENERGY = 100F;
-    private static final int GRAVITY_EFFECT= 5;
+    private static final int GRAVITY_EFFECT= 10;
     private static final int WALKING_SPEED = 300;
     private static final int AVATAR_SIZE = 60;
     private static final float ENERGY_CHANGE = 0.5F;
@@ -99,27 +99,25 @@ public class Avatar extends GameObject {
      * sets the velocity of the avatar in the y vector
      */
     private void setVelocityY(){
-        if(inTheAir){
-            if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
-                    inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && energy > 0){
-                energy -= ENERGY_CHANGE;
-                yMovementDir = new Vector2(0, -1);
-                transform().setVelocityY(yMovementDir.y()*FLY_SPEED);
-            }
-            else{
-                if(getVelocity().y() == 0){
-                    yMovementDir = new Vector2(0, 1);
-                }
-                transform().setVelocityY(getVelocity().y() + GRAVITY_EFFECT);
-            }
+        if(inTheAir && inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
+                inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && energy > 0) {
+            energy -= ENERGY_CHANGE;
+            yMovementDir = new Vector2(0, -1);
+            transform().setVelocityY(yMovementDir.y() * FLY_SPEED);
         }
-        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) && !inTheAir){
+        else if(!inTheAir && inputListener.isKeyPressed(KeyEvent.VK_SPACE)){
             yMovementDir = new Vector2(0, -1);
             inTheAir = true;
             transform().setVelocityY(yMovementDir.y()*JUMP_SPEED);
         }
-        if(getVelocity().y() == 0 && energy < HIGHEST_ENERGY){
+        else if(!inTheAir && energy < HIGHEST_ENERGY){
             energy += ENERGY_CHANGE;
+        }
+        else{
+            if(getVelocity().y() == 0){
+                yMovementDir = new Vector2(0, 1);
+            }
+            transform().setVelocityY(getVelocity().y() + GRAVITY_EFFECT);
         }
     }
 
@@ -156,7 +154,7 @@ public class Avatar extends GameObject {
             renderer().setIsFlippedHorizontally(true);
         }
         else{
-            if(getVelocity().y() != 0){
+            if(inTheAir){
                 renderer().setRenderable(FLYING_UP);
             }
             else{
@@ -175,8 +173,6 @@ public class Avatar extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        //TODO: if the other object is bellow our object only then stop the y velocity
-        yMovementDir = Vector2.ZERO;
         transform().setVelocityY(0);
         inTheAir = false;
     }
