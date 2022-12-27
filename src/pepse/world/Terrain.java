@@ -18,7 +18,7 @@ public class Terrain {
     private int seed;
     private static final int RANDOM_RANGE = 256;
     private static final int TERRAIN_DEPTH = 20;
-    private static final int NOISE_MULTIPLIER = 150;
+    public static final int NOISE_MULTIPLIER = 150;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
 
     private static int[] permutation = new int[RANDOM_RANGE];
@@ -38,7 +38,7 @@ public class Terrain {
 
     public float GroundHeightAt(float x) {
         float noiseReturn = noiseGenerator.noise(x/15, 200,200);
-        return (windowDimensions.y() - noiseReturn * NOISE_MULTIPLIER) + 350;
+        return (windowDimensions.y() - noiseReturn * NOISE_MULTIPLIER) - 350;
     }
 
     public void createInRange(int minX, int maxX) {
@@ -53,7 +53,7 @@ public class Terrain {
 
     private void fillGround(int height, int x) {
         for (int i = 0; i < TERRAIN_DEPTH; i++) {
-            Block curBlock = new Block(new Vector2(x, height - i * Block.SIZE),
+            Block curBlock = new Block(new Vector2(x, height + i * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
             curBlock.setTag("ground");
             gameObjects.addGameObject(curBlock, groundLayer);
