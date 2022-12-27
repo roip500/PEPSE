@@ -18,11 +18,13 @@ import pepse.world.Terrain;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
 import pepse.world.daynight.Night;
+import pepse.world.trees.Tree;
 
 import java.awt.*;
 
 public class PepseGameManager extends GameManager{
 
+    private static final int SEED = 500;
     private static final int CYCLE_LENGTH = 60;
     private static final Color BASE_GROUND_COLOR = new Color(212,123,74);
     private static final Color HALO_COLOR = new Color(255, 255, 0, 20);
@@ -49,22 +51,24 @@ public class PepseGameManager extends GameManager{
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
 
         // create the sky:
-        GameObject sky = Sky.create(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
+        GameObject sky = Sky.create(gameObjects(), windowController.getWindowDimensions(),
+                Layer.BACKGROUND);
 
         // create the sun:
         GameObject sun = Sun.create(gameObjects(),windowController.getWindowDimensions(),
                 Layer.BACKGROUND + 1, CYCLE_LENGTH);
 
         // create the sun halo:
-        GameObject halo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 2, sun, HALO_COLOR);
+        GameObject halo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 2,
+                sun, HALO_COLOR);
 
         // create the night:
         GameObject night = Night.create(gameObjects(), windowController.getWindowDimensions(),
                 Layer.DEFAULT+3, CYCLE_LENGTH);
 
         // create terrain:
-        Terrain terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS, windowController.getWindowDimensions()
-                ,777);
+        Terrain terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS,
+                windowController.getWindowDimensions(),SEED);
         terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
 
         // create avatar:
