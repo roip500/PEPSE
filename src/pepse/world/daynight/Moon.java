@@ -9,13 +9,14 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
-public class Sun{
+public class Moon{
 
     private static final int SIZE = 100;
     private static final float PERCENT_OF_Y = 2/3f;
 
+
     /**
-     * creates the sun object and adds it to gameObjectCollection
+     * creates the moon object and adds it to gameObjectCollection
      * @param gameObjectCollection list of all the game objects.
      * @param windowDimension size of the window
      * @param sunLayer layer in the board
@@ -25,27 +26,27 @@ public class Sun{
                                     Vector2 windowDimension,
                                     int sunLayer,
                                     float cycleLength){
-        GameObject sun = new GameObject(
+        GameObject moon = new GameObject(
                 new Vector2(0, windowDimension.y() * PERCENT_OF_Y),
                 new Vector2(SIZE, SIZE),
-                new OvalRenderable(Color.YELLOW));
-        sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        sun.setTag("sun");
-        new Transition<Float>(sun,
-                aFloat -> sun.setCenter(setSunCenter(aFloat, windowDimension)),
+                new OvalRenderable(Color.WHITE));
+        moon.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        moon.setTag("moon");
+        new Transition<Float>(moon,
+                aFloat -> moon.setCenter(setSunCenter(aFloat, windowDimension)),
                 1F,
                 -1F,
                 Transition.LINEAR_INTERPOLATOR_FLOAT,
                 cycleLength,
                 Transition.TransitionType.TRANSITION_LOOP,
                 null);
-        gameObjectCollection.addGameObject(sun, sunLayer);
-        return sun;
+        gameObjectCollection.addGameObject(moon, sunLayer);
+        return moon;
     }
 
     /**
-     * function calculates the center point for the sun object in the game
-     * @param angle angle the sun is from the center
+     * function calculates the center point for the moon object in the game
+     * @param angle angle the moon is from the center
      * @param windowDimension dimension of the screen
      * @return Vector2 object
      */
@@ -53,7 +54,7 @@ public class Sun{
         Vector2 centerPoint = new Vector2(windowDimension.x()/2, windowDimension.y() * PERCENT_OF_Y);
         float cos = (float) (Math.cos(angle * Math.PI));
         float sin = (float) (Math.sin(angle * Math.PI));
-        return new Vector2(centerPoint.x() + centerPoint.x() * cos , centerPoint.y() - centerPoint.y() * sin);
+        return new Vector2(centerPoint.x() - centerPoint.x() * cos , centerPoint.y() + centerPoint.y() * sin);
     }
 }
 

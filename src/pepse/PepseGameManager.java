@@ -15,6 +15,7 @@ import pepse.util.ColorSupplier;
 import pepse.world.Avatar;
 import pepse.world.Sky;
 import pepse.world.Terrain;
+import pepse.world.daynight.Moon;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
 import pepse.world.daynight.Night;
@@ -51,18 +52,16 @@ public class PepseGameManager extends GameManager{
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
 
         // create the sky:
-        GameObject sky = Sky.create(gameObjects(), windowController.getWindowDimensions(),
-                Layer.BACKGROUND);
+        Sky.create(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
 
-        // create the sun:
+        // create the sun and the halo:
         GameObject sun = Sun.create(gameObjects(),windowController.getWindowDimensions(),
                 Layer.BACKGROUND + 1, CYCLE_LENGTH);
+        SunHalo.create(gameObjects(), Layer.BACKGROUND + 2, sun, HALO_COLOR);
 
-        // create the sun halo:
-        GameObject halo = SunHalo.create(gameObjects(), Layer.BACKGROUND + 2,
-                sun, HALO_COLOR);
-
-        // create the night:
+        // create the moon and the night effect:
+        GameObject moon = Moon.create(gameObjects(),windowController.getWindowDimensions(),
+                Layer.BACKGROUND + 1, CYCLE_LENGTH);
         GameObject night = Night.create(gameObjects(), windowController.getWindowDimensions(),
                 Layer.DEFAULT+3, CYCLE_LENGTH);
 
