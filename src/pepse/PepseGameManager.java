@@ -61,7 +61,7 @@ public class PepseGameManager extends GameManager{
 
         // create the moon and the night effect:
         GameObject moon = Moon.create(gameObjects(),windowController.getWindowDimensions(),
-                Layer.BACKGROUND + 1, CYCLE_LENGTH);
+                Layer.BACKGROUND + 1, CYCLE_LENGTH, imageReader);
         GameObject night = Night.create(gameObjects(), windowController.getWindowDimensions(),
                 Layer.DEFAULT+3, CYCLE_LENGTH);
 

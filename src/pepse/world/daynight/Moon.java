@@ -4,6 +4,7 @@ import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.components.CoordinateSpace;
 import danogl.components.Transition;
+import danogl.gui.ImageReader;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.util.Vector2;
 
@@ -25,11 +26,12 @@ public class Moon{
     public static GameObject create(GameObjectCollection gameObjectCollection,
                                     Vector2 windowDimension,
                                     int sunLayer,
-                                    float cycleLength){
+                                    float cycleLength,
+                                    ImageReader imageReader){
         GameObject moon = new GameObject(
                 new Vector2(0, windowDimension.y() * PERCENT_OF_Y),
                 new Vector2(SIZE, SIZE),
-                new OvalRenderable(Color.WHITE));
+                imageReader.readImage("assets/moon.png",true));
         moon.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         moon.setTag("moon");
         new Transition<Float>(moon,
