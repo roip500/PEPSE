@@ -71,7 +71,7 @@ public class PepseGameManager extends GameManager{
         terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
 
         Tree tree = new Tree(gameObjects(),Layer.STATIC_OBJECTS, 12, terrain);
-        tree.createInRange(0, (int) windowController.getWindowDimensions().x(), terrain);
+        tree.createInRange(0, (int) windowController.getWindowDimensions().x(),terrain);
 
         // create avatar:
         float x = windowController.getWindowDimensions().x()/2;
