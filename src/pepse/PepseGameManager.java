@@ -27,10 +27,7 @@ public class PepseGameManager extends GameManager{
 
     private static final int SEED = 500;
     private static final int CYCLE_LENGTH = 60;
-    private static final Color BASE_GROUND_COLOR = new Color(212,123,74);
     private static final Color HALO_COLOR = new Color(255, 255, 0, 20);
-    private static final Renderable BLOCK_RENDERER =
-            new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
 
     /**
      * initializes the game

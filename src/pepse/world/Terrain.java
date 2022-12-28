@@ -5,7 +5,6 @@ import java.util.Random;
 
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.RectangleRenderable;
-import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 import pepse.util.NoiseGenerator;
@@ -15,14 +14,10 @@ public class Terrain {
     private int groundLayer;
     private float groundHeightAtX0;
     private Vector2 windowDimensions;
-    private int seed;
-    private static final int RANDOM_RANGE = 256;
     private static final int TERRAIN_DEPTH = 20;
     public static final int NOISE_MULTIPLIER = 150;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
 
-    private static int[] permutation = new int[RANDOM_RANGE];
-    private static Random random;
     private NoiseGenerator noiseGenerator;
 
 
@@ -32,7 +27,6 @@ public class Terrain {
         this.groundLayer = groundLayer;
         groundHeightAtX0 = (windowDimensions.y() * ((float) 1 / 3));
         this.windowDimensions = windowDimensions;
-        this.seed = seed;
         noiseGenerator= new NoiseGenerator(seed);
     }
 
