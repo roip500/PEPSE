@@ -20,7 +20,7 @@ import java.awt.*;
 
 public class PepseGameManager extends GameManager{
 
-    private static final int SEED = 400;
+    private static final int SEED = 417;
     private static final int CYCLE_LENGTH = 60;
     private float worldsLeftEdge;
     private float worldsRightEdge;
