@@ -76,7 +76,12 @@ public class Terrain {
             Block curBlock = new Block(new Vector2(x, height + i * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
             curBlock.setTag(GROUND_TAG);
-            gameObjects.addGameObject(curBlock, groundLayer);
+            if(i < 2){
+                gameObjects.addGameObject(curBlock, groundLayer);
+            }
+            else{
+                gameObjects.addGameObject(curBlock, groundLayer + 1);
+            }
         }
     }
 }

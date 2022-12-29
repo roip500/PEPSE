@@ -44,7 +44,7 @@ public class Tree {
         for (int i = newMin; i <= newMax; i += Block.SIZE) {
             int curMaxHeight =
                     (int) ((Math.floor(terrain.GroundHeightAt(i) / Block.SIZE) * Block.SIZE));
-            if(rand.nextInt(10) == 1){
+            if(rand.nextInt(10) == 1){ //TODO: use noise
                 buildTree(curMaxHeight, i);
             }
         }
@@ -56,7 +56,7 @@ public class Tree {
      * @param xCord grounds x coordination
      */
     private void buildTree(int yCord, int xCord) {
-        int treeHeight = rand.nextInt(TREE_SIZE) + 5;
+        int treeHeight = rand.nextInt(TREE_SIZE) + 5; //TODO: use noise
         for(int i = 0; i < treeHeight; i++){
             Block curBlock = new Block(new Vector2(xCord, yCord - (i+1) * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(TREE_COLOR)));

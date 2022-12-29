@@ -37,7 +37,7 @@ public class Leaf extends GameObject{
                 new RectangleRenderable(ColorSupplier.approximateColor(LEAF_COLOR)));
         this.gameObjects = gameObjects;
         this.topLeftCorner = topLeftCorner;
-        this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
+        this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE); //TODO: use noise
         gameObjects.addGameObject(this, Layer.DEFAULT);
         new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
                 true, this::setLeafTransitions);
@@ -122,7 +122,7 @@ public class Leaf extends GameObject{
         this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
         this.setTopLeftCorner(topLeftCorner);
         transform().setVelocityY(0);
-        new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
+        new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE), //TODO: use noise
                 true, () -> new Transition<Float>(this,
                 this.renderer()::setOpaqueness, 0F, 1F,
                 Transition.LINEAR_INTERPOLATOR_FLOAT, TRANSITION_CYCLE * 5,

@@ -82,6 +82,13 @@ public class PepseGameManager extends GameManager{
         avatar = Avatar.create(gameObjects(), Layer.DEFAULT, new Vector2(x, y),
                 inputListener, imageReader);
 
+        // set collision:
+        gameObjects().layers().shouldLayersCollide(Layer.STATIC_OBJECTS+1,
+                Layer.STATIC_OBJECTS+1, false);
+        gameObjects().layers().shouldLayersCollide(Layer.STATIC_OBJECTS,
+                Layer.STATIC_OBJECTS, false);
+
+
         // infinite world:
         setCamera(new Camera(avatar, Vector2.ZERO,
                 windowController.getWindowDimensions(),
