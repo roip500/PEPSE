@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Leaf extends GameObject{
+
     private final GameObjectCollection gameObjects;
     private final Vector2 topLeftCorner;
     private int lifeSpan;
@@ -25,18 +26,27 @@ public class Leaf extends GameObject{
     private static final int LIFE_SPAN_RANGE = 100;
     private static final Random rand = new Random();
     private static final Color LEAF_COLOR = new Color(50, 200, 30);
+
+    /**
+     * constructor for Leaf and adds it to the game.
+     * @param gameObjects list of all the gameObjects in the game
+     * @param topLeftCorner Vector2 object that represents the location of the object in the game
+     */
     public Leaf(GameObjectCollection gameObjects, Vector2 topLeftCorner) {
         super(topLeftCorner,new Vector2(LEAF_SIZE,LEAF_SIZE),
                 new RectangleRenderable(ColorSupplier.approximateColor(LEAF_COLOR)));
         this.gameObjects = gameObjects;
         this.topLeftCorner = topLeftCorner;
+        this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
         gameObjects.addGameObject(this, Layer.DEFAULT);
         new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
-                true, this::leafTransitions);
-        this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
+                true, this::setLeafTransitions);
     }
 
-    private void leafTransitions(){
+    /**
+     * sets the transitions of the leaf
+     */
+    private void setLeafTransitions(){
         new Transition<Float>(this,
                 this.renderer()::setRenderableAngle,
                 -10F,
@@ -55,18 +65,39 @@ public class Leaf extends GameObject{
                 null);
     }
 
-
+    /**
+     * sets that the leaf can only collide with the ground
+     * @param other The other GameObject.
+     * @return True if other is ground, else False
+     */
     @Override
     public boolean shouldCollideWith(GameObject other) {
         return Objects.equals(other.getTag(), "ground");
     }
 
+    /**
+     * if the leaf had collided with the ground, then the func sets its y-velocity to 0
+     * @param other The GameObject with which a collision occurred.
+     * @param collision Information regarding this collision.
+     *                  A reasonable elastic behavior can be achieved with:
+     *                  setVelocity(getVelocity().flipped(collision.getNormal()));
+     */
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         transform().setVelocityY(0);
     }
 
+    /**
+     * checks if the life span of the leaf has reached 0. if yes then it adds a y-velocity
+     * and starts the fading transition
+     * @param deltaTime The time elapsed, in seconds, since the last frame. Can
+     *                  be used to determine a new position/velocity by multiplying
+     *                  this delta with the velocity/acceleration respectively
+     *                  and adding to the position/velocity:
+     *                  velocity += deltaTime*acceleration
+     *                  pos += deltaTime*velocity
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -82,6 +113,11 @@ public class Leaf extends GameObject{
                     this::restoreLeaf);
         }
     }
+
+    /**
+     * returns the leaf to its original left corner Vector2 and starts a transition
+     * to re-appear on the tree
+     */
     private void restoreLeaf(){
         this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
         this.setTopLeftCorner(topLeftCorner);

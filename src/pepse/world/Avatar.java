@@ -164,7 +164,7 @@ public class Avatar extends GameObject {
     }
 
     /**
-     *
+     * sets the avatars y-velocity to 0 if the avatar collided with an object and turns off the inTheAir flag
      * @param other The GameObject with which a collision occurred.
      * @param collision Information regarding this collision.
      *                  A reasonable elastic behavior can be achieved with:
