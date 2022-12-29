@@ -22,12 +22,17 @@ import pepse.world.daynight.Night;
 import pepse.world.trees.Tree;
 
 import java.awt.*;
+import java.sql.SQLOutput;
 
 public class PepseGameManager extends GameManager{
 
     private static final int SEED = 400;
     private static final int CYCLE_LENGTH = 60;
+    private float worldsLeftEdge;
+    private float worldsRightEdge;
+    private float sizeOfWindowX;
     private static final Color HALO_COLOR = new Color(255, 255, 0, 20);
+    private GameObject avatar;
 
     /**
      * initializes the game
@@ -48,6 +53,11 @@ public class PepseGameManager extends GameManager{
                                WindowController windowController) {
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
 
+        //arguments:
+        sizeOfWindowX = windowController.getWindowDimensions().x();
+        worldsLeftEdge = -sizeOfWindowX;
+        worldsRightEdge = 2* sizeOfWindowX;
+
         // create the sky:
         Sky.create(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
 
@@ -59,21 +69,21 @@ public class PepseGameManager extends GameManager{
         // create the moon and the night effect:
         GameObject moon = Moon.create(gameObjects(),windowController.getWindowDimensions(),
                 Layer.BACKGROUND + 1, CYCLE_LENGTH, imageReader);
-        GameObject night = Night.create(gameObjects(), windowController.getWindowDimensions(),
+        Night.create(gameObjects(), windowController.getWindowDimensions(),
                 Layer.DEFAULT+3, CYCLE_LENGTH);
 
         // create terrain:
         Terrain terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS,
                 windowController.getWindowDimensions(),SEED);
-        terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
+        terrain.createInRange((int) worldsLeftEdge, (int) worldsRightEdge);
 
         Tree tree = new Tree(gameObjects(),Layer.STATIC_OBJECTS, SEED, terrain);
-        tree.createInRange(0, (int) windowController.getWindowDimensions().x(),terrain);
+        tree.createInRange((int) worldsLeftEdge, (int) worldsRightEdge,terrain);
 
         // create avatar:
         float x = windowController.getWindowDimensions().x()/2;
         float y = windowController.getWindowDimensions().y()/2;
-        GameObject avatar = Avatar.create(gameObjects(), Layer.DEFAULT, new Vector2(x, y),
+        avatar = Avatar.create(gameObjects(), Layer.DEFAULT, new Vector2(x, y),
                 inputListener, imageReader);
 
         // infinite world:
@@ -81,7 +91,21 @@ public class PepseGameManager extends GameManager{
                 windowController.getWindowDimensions(),
                 windowController.getWindowDimensions()));
         windowController.getWindowDimensions().mult(0.5f);
+
     }
+
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+//        if(avatar.getCenter().x() < worldsLeftEdge + sizeOfWindowX){
+//
+//        }
+//        else if(avatar.getCenter().x() > worldsRightEdge - sizeOfWindowX){
+//
+//        }
+    }
+
+
 
     /**
      * main function of the game - creates and runs the game

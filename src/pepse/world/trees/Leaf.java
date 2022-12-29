@@ -122,13 +122,10 @@ public class Leaf extends GameObject{
         this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
         this.setTopLeftCorner(topLeftCorner);
         transform().setVelocityY(0);
-        new Transition<Float>(this,
-                this.renderer()::setOpaqueness,
-                0F,
-                1F,
-                Transition.LINEAR_INTERPOLATOR_FLOAT,
-                TRANSITION_CYCLE * 5,
-                Transition.TransitionType.TRANSITION_ONCE,
-                this::restoreLeaf);
+        new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
+                true, () -> new Transition<Float>(this,
+                this.renderer()::setOpaqueness, 0F, 1F,
+                Transition.LINEAR_INTERPOLATOR_FLOAT, TRANSITION_CYCLE * 5,
+                Transition.TransitionType.TRANSITION_ONCE, this::restoreLeaf));
     }
 }
