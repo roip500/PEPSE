@@ -43,13 +43,21 @@ public class Tree {
         }
     }
 
-    private void buildTree(int yCoord, int xCoord) {
+    private void buildTree(int yCord, int xCord) {
         int treeHeight = rand.nextInt(TREE_SIZE) + 5;
         for(int i = 0; i < treeHeight; i++){
-            Block curBlock = new Block(new Vector2(xCoord, yCoord - (i+1) * Block.SIZE),
+            Block curBlock = new Block(new Vector2(xCord, yCord - (i+1) * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(TREE_COLOR)));
             curBlock.setTag("tree");
             gameObjects.addGameObject(curBlock, rootLayer);
+        }
+        int leafRange = Math.min(7, treeHeight - 2);
+        yCord -= ((treeHeight + 3) * Block.SIZE);
+        xCord -= (leafRange/2 * Block.SIZE);
+        for(int i = 0; i < leafRange * Block.SIZE; i += Block.SIZE ){
+            for(int j = 0;  j < leafRange * Block.SIZE; j += Block.SIZE){
+                new Leaf(gameObjects, new Vector2(xCord + j, yCord + i), rand.nextInt(100));
+            }
         }
     }
 }

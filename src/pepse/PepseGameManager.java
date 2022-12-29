@@ -25,7 +25,7 @@ import java.awt.*;
 
 public class PepseGameManager extends GameManager{
 
-    private static final int SEED = 500;
+    private static final int SEED = 400;
     private static final int CYCLE_LENGTH = 60;
     private static final Color HALO_COLOR = new Color(255, 255, 0, 20);
 
@@ -67,7 +67,7 @@ public class PepseGameManager extends GameManager{
                 windowController.getWindowDimensions(),SEED);
         terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
 
-        Tree tree = new Tree(gameObjects(),Layer.STATIC_OBJECTS, 12, terrain);
+        Tree tree = new Tree(gameObjects(),Layer.STATIC_OBJECTS, SEED, terrain);
         tree.createInRange(0, (int) windowController.getWindowDimensions().x(),terrain);
 
         // create avatar:
