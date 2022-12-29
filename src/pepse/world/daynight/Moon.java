@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class Moon{
 
-    private static final int SIZE = 100;
+    private static final int SIZE = 97;
 
     /**
      * creates the moon object and adds it to gameObjectCollection

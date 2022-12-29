@@ -8,21 +8,15 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
-import danogl.gui.rendering.RectangleRenderable;
-import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import pepse.util.ColorSupplier;
 import pepse.world.Avatar;
 import pepse.world.Sky;
 import pepse.world.Terrain;
-import pepse.world.daynight.Moon;
-import pepse.world.daynight.Sun;
-import pepse.world.daynight.SunHalo;
-import pepse.world.daynight.Night;
+import pepse.world.daynight.*;
 import pepse.world.trees.Tree;
 
 import java.awt.*;
-import java.sql.SQLOutput;
+
 
 public class PepseGameManager extends GameManager{
 
@@ -31,7 +25,8 @@ public class PepseGameManager extends GameManager{
     private float worldsLeftEdge;
     private float worldsRightEdge;
     private float sizeOfWindowX;
-    private static final Color HALO_COLOR = new Color(255, 255, 0, 20);
+    private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
+    private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
     private GameObject avatar;
 
     /**
@@ -64,11 +59,12 @@ public class PepseGameManager extends GameManager{
         // create the sun and the halo:
         GameObject sun = Sun.create(gameObjects(),windowController.getWindowDimensions(),
                 Layer.BACKGROUND + 1, CYCLE_LENGTH);
-        SunHalo.create(gameObjects(), Layer.BACKGROUND + 2, sun, HALO_COLOR);
+        SunHalo.create(gameObjects(), Layer.BACKGROUND + 2, sun, SUN_HALO_COLOR);
 
         // create the moon and the night effect:
         GameObject moon = Moon.create(gameObjects(),windowController.getWindowDimensions(),
                 Layer.BACKGROUND + 1, CYCLE_LENGTH, imageReader);
+        MoonHalo.create(gameObjects(), Layer.BACKGROUND + 2, moon, MOON_HALO_COLOR);
         Night.create(gameObjects(), windowController.getWindowDimensions(),
                 Layer.DEFAULT+3, CYCLE_LENGTH);
 
