@@ -56,7 +56,7 @@ public class Tree {
         xCord -= (leafRange/2 * Block.SIZE);
         for(int i = 0; i < leafRange * Block.SIZE; i += Block.SIZE ){
             for(int j = 0;  j < leafRange * Block.SIZE; j += Block.SIZE){
-                new Leaf(gameObjects, new Vector2(xCord + j, yCord + i), rand.nextInt(100));
+                new Leaf(gameObjects, new Vector2(xCord + j, yCord + i));
             }
         }
     }
