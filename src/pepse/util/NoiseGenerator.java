@@ -9,6 +9,10 @@ public class NoiseGenerator {
     private int[] p;
     private int[] permutation;
 
+    /**
+     * the perlin noise class
+     * @param seed
+     */
     public NoiseGenerator(double seed) {
         this.seed = seed;
         init();
