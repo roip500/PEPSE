@@ -12,7 +12,6 @@ import java.awt.*;
 public class Sun{
 
     private static final int SIZE = 100;
-    private static final float PERCENT_OF_Y = 2/3f;
 
     /**
      * creates the sun object and adds it to gameObjectCollection
@@ -26,7 +25,7 @@ public class Sun{
                                     int sunLayer,
                                     float cycleLength){
         GameObject sun = new GameObject(
-                new Vector2(0, windowDimension.y() * PERCENT_OF_Y),
+                new Vector2(0, windowDimension.y()),
                 new Vector2(SIZE, SIZE),
                 new OvalRenderable(Color.YELLOW));
         sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
@@ -50,7 +49,7 @@ public class Sun{
      * @return Vector2 object
      */
     private static Vector2 setSunCenter(float angle,Vector2 windowDimension){
-        Vector2 centerPoint = new Vector2(windowDimension.x()/2, windowDimension.y() * PERCENT_OF_Y);
+        Vector2 centerPoint = new Vector2(windowDimension.x()/2, windowDimension.y());
         float cos = (float) (Math.cos(angle * Math.PI));
         float sin = (float) (Math.sin(angle * Math.PI));
         return new Vector2(centerPoint.x() + centerPoint.x() * cos , centerPoint.y() - centerPoint.y() * sin);
