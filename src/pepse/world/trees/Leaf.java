@@ -26,6 +26,7 @@ public class Leaf extends GameObject{
     private static final int LIFE_SPAN_RANGE = 100;
     private static final Random rand = new Random();
     private static final Color LEAF_COLOR = new Color(50, 200, 30);
+    private Transition<Float> horizontalTransition;
 
     /**
      * constructor for Leaf and adds it to the game.
@@ -37,7 +38,7 @@ public class Leaf extends GameObject{
                 new RectangleRenderable(ColorSupplier.approximateColor(LEAF_COLOR)));
         this.gameObjects = gameObjects;
         this.topLeftCorner = topLeftCorner;
-        this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE); //TODO: use noise
+        this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE); //TODO: use noise -- no need to use noise here
         gameObjects.addGameObject(this, Layer.DEFAULT);
         new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
                 true, this::setLeafTransitions);
@@ -85,6 +86,8 @@ public class Leaf extends GameObject{
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
+        this.removeComponent(horizontalTransition);
+        //todo check why on some leaves it stops and on others it doesn't
         transform().setVelocityY(0);
     }
 
@@ -103,14 +106,23 @@ public class Leaf extends GameObject{
         super.update(deltaTime);
         if (lifeSpan == 0 && this.getVelocity().y() == 0){
             transform().setVelocityY(15);
-            new Transition<Float>(this,
-                    this.renderer()::setOpaqueness,
-                    1F,
-                    0F,
+//            new Transition<Float>(this,
+//                    this.renderer()::setOpaqueness,
+//                    1F,
+//                    0F,
+//                    Transition.LINEAR_INTERPOLATOR_FLOAT,
+//                    TRANSITION_CYCLE * 10,
+//                    Transition.TransitionType.TRANSITION_ONCE,
+//                    this::restoreLeaf);
+            horizontalTransition = new Transition<>(this, (aFloat) ->transform().setVelocityX(aFloat),
+                    -15f,
+                    15f,
                     Transition.LINEAR_INTERPOLATOR_FLOAT,
-                    TRANSITION_CYCLE * 10,
-                    Transition.TransitionType.TRANSITION_ONCE,
-                    this::restoreLeaf);
+                    TRANSITION_CYCLE,
+                    Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
+                    null);
+            // this transition moves the leaves back and forth while falling
+            this.renderer().fadeOut(TRANSITION_CYCLE * 10, this::restoreLeaf);
         }
     }
 

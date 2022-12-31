@@ -50,8 +50,8 @@ public class PepseGameManager extends GameManager{
 
         //arguments:
         sizeOfWindowX = windowController.getWindowDimensions().x();
-        worldsLeftEdge = -sizeOfWindowX;
-        worldsRightEdge = 2* sizeOfWindowX;
+        worldsLeftEdge = -240;
+        worldsRightEdge = sizeOfWindowX + 240;
 
         // create the sky:
         Sky.create(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);

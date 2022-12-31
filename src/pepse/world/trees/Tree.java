@@ -4,6 +4,7 @@ import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
+import pepse.util.NoiseGenerator;
 import pepse.world.Block;
 import pepse.world.Terrain;
 
@@ -14,7 +15,7 @@ public class Tree {
     private GameObjectCollection gameObjects;
     private int rootLayer;
     private Terrain terrain;
-    private Random rand;
+    private NoiseGenerator noiseGenerator;
     private static final int TREE_SIZE = 10;
     private static final Color TREE_COLOR =new Color(100, 50, 20);
 
@@ -30,7 +31,7 @@ public class Tree {
         this.gameObjects = gameObjects;
         this.rootLayer = rootLayer;
         this.terrain = terrain;
-        rand = new Random(seed);
+        noiseGenerator = new NoiseGenerator(seed);
     }
 
     /**
@@ -44,7 +45,8 @@ public class Tree {
         for (int i = newMin; i <= newMax; i += Block.SIZE) {
             int curMaxHeight =
                     (int) ((Math.floor(terrain.GroundHeightAt(i) / Block.SIZE) * Block.SIZE));
-            if(rand.nextInt(10) == 1){ //TODO: use noise
+            float plantTree = noiseGenerator.noise(i);
+            if(plantTree >= 0.1f && plantTree <= 0.2f){ //TODO: use noise
                 buildTree(curMaxHeight, i);
             }
         }
@@ -56,7 +58,10 @@ public class Tree {
      * @param xCord grounds x coordination
      */
     private void buildTree(int yCord, int xCord) {
-        int treeHeight = rand.nextInt(TREE_SIZE) + 5; //TODO: use noise
+//        int treeHeight = rand.nextInt(TREE_SIZE) + 5; //TODO: use noise
+        int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE + 5);
+        //todo check with roi what we want to do with the leaves now that we use noise, look a bit
+        // different than before
         for(int i = 0; i < treeHeight; i++){
             Block curBlock = new Block(new Vector2(xCord, yCord - (i+1) * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(TREE_COLOR)));
