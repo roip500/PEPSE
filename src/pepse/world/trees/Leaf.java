@@ -2,8 +2,6 @@ package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.collisions.Collision;
-import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
@@ -11,13 +9,13 @@ import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 
 import java.awt.*;
-import java.util.Objects;
 import java.util.Random;
 
 public class Leaf extends GameObject{
 
-    private final GameObjectCollection gameObjects;
+    private static final float LEAF_SPEED = 15;
     private final Vector2 topLeftCorner;
+    private boolean flagForVelocityX;
     private int lifeSpan;
 
     private static final int LEAF_SIZE = 29;
@@ -32,18 +30,16 @@ public class Leaf extends GameObject{
 
     /**
      * constructor for Leaf and adds it to the game.
-     * @param gameObjects list of all the gameObjects in the game
      * @param topLeftCorner Vector2 object that represents the location of the object in the game
      */
-    public Leaf(GameObjectCollection gameObjects, Vector2 topLeftCorner) {
+    public Leaf(Vector2 topLeftCorner) {
         super(topLeftCorner,new Vector2(LEAF_SIZE,LEAF_SIZE),
                 new RectangleRenderable(ColorSupplier.approximateColor(LEAF_COLOR)));
-        this.gameObjects = gameObjects;
         this.topLeftCorner = topLeftCorner;
-        this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE); //TODO: use noise -- no need to use noise here
-        gameObjects.addGameObject(this, Layer.DEFAULT);
+        this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
         new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
                 true, this::setLeafTransitions);
+        flagForVelocityX = false;
     }
 
     /**
@@ -52,12 +48,12 @@ public class Leaf extends GameObject{
     private void setLeafTransitions(){
         angleFunc = new Transition<Float>(this,
                 this.renderer()::setRenderableAngle,
-                -10F,
-                10F,
+                -20F,
+                20F,
                 Transition.CUBIC_INTERPOLATOR_FLOAT,
                 TRANSITION_CYCLE,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
-                () -> lifeSpan -=1);
+                () -> lifeSpan -= 1);
         dimensionsFunc = new Transition<Float>(this,
                 aFloat ->  this.setDimensions(new Vector2(aFloat, aFloat)),
                 (float)LEAF_SIZE,
@@ -66,16 +62,6 @@ public class Leaf extends GameObject{
                 TRANSITION_CYCLE,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                 null);
-    }
-
-    /**
-     * sets that the leaf can only collide with the ground
-     * @param other The other GameObject.
-     * @return True if other is ground, else False
-     */
-    @Override
-    public boolean shouldCollideWith(GameObject other) {
-        return Objects.equals(other.getTag(), "ground");
     }
 
     /**
@@ -88,11 +74,11 @@ public class Leaf extends GameObject{
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        setVelocity(Vector2.ZERO);
+        transform().setVelocityX(0);
+        transform().setVelocityY(0);
         removeComponent(horizontalTransition);
         removeComponent(angleFunc);
         removeComponent(dimensionsFunc);
-        //TODO: check why on some leaves it stops and on others it doesn't
     }
 
     /**
@@ -108,27 +94,18 @@ public class Leaf extends GameObject{
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        if (lifeSpan == 0 && this.getVelocity().y() == 0){
-            transform().setVelocityY(15);
-//            new Transition<Float>(this,
-//                    this.renderer()::setOpaqueness,
-//                    1F,
-//                    0F,
-//                    Transition.LINEAR_INTERPOLATOR_FLOAT,
-//                    TRANSITION_CYCLE * 10,
-//                    Transition.TransitionType.TRANSITION_ONCE,
-//                    this::restoreLeaf);
-            horizontalTransition = new Transition<>(this, (aFloat) ->transform().setVelocityX(aFloat),
-                    -15f,
-                    15f,
+        if (lifeSpan == 0 && this.getVelocity().y() == 0 && !flagForVelocityX){
+            transform().setVelocityY(LEAF_SPEED);
+            this.renderer().fadeOut(TRANSITION_CYCLE * 10, this::restoreLeaf);
+            horizontalTransition = new Transition<>(this,
+                    (aFloat) ->transform().setVelocityX(aFloat),
+                    -LEAF_SPEED,
+                    LEAF_SPEED,
                     Transition.LINEAR_INTERPOLATOR_FLOAT,
                     TRANSITION_CYCLE,
                     Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                     null);
-//            this.removeComponent(dimensionsFunc); // TODO: doesn't work need to change
-//            this.removeComponent(angleFunc);// TODO: doesn't work need to change
-            // this transition moves the leaves back and forth while falling
-            this.renderer().fadeOut(TRANSITION_CYCLE * 10, this::restoreLeaf);
+            flagForVelocityX = true;
         }
     }
 
@@ -140,10 +117,10 @@ public class Leaf extends GameObject{
         this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
         this.setTopLeftCorner(topLeftCorner);
         transform().setVelocityY(0);
-        new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE), //TODO: use noise
-                true, () -> new Transition<Float>(this,
-                this.renderer()::setOpaqueness, 0F, 1F,
-                Transition.LINEAR_INTERPOLATOR_FLOAT, TRANSITION_CYCLE * 5,
-                Transition.TransitionType.TRANSITION_ONCE, this::restoreLeaf));
+        transform().setVelocityX(0);
+        flagForVelocityX = false;
+        this.renderer().fadeIn(rand.nextInt(TRANSITION_CYCLE) * 10, null);
+        new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
+                true, this::setLeafTransitions);
     }
 }

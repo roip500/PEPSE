@@ -20,13 +20,28 @@ import java.awt.*;
 
 public class PepseGameManager extends GameManager{
 
+    //Layers in the game:
+    private static final int SKY_LAYER = Layer.BACKGROUND;
+    private static final int NIGHT_LAYER = Layer.FOREGROUND;
+    private static final int GROUND_LAYER = Layer.STATIC_OBJECTS;
+    private static final int EXTRA_GROUND_LAYER = Layer.STATIC_OBJECTS + 1;
+    private static final int LEAF_LAYER = Layer.STATIC_OBJECTS + 5;
+    private static final int TREE_TRUNK_LAYER = Layer.STATIC_OBJECTS + 1;
+    private static final int SUN_AND_MOON_LAYER = Layer.BACKGROUND + 1;
+    private static final int SUN_AND_MOON_HALO_LAYER = Layer.BACKGROUND + 2;
+    private static final int AVATAR_LAYER = Layer.DEFAULT;
+
+    //const arguments:
+    private static final int DIST_FROM_SCREEN_SIDES = 240;
     private static final int SEED = 417;
     private static final int CYCLE_LENGTH = 60;
+    private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
+    private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
+
+    //classes arguments:
     private float worldsLeftEdge;
     private float worldsRightEdge;
     private float sizeOfWindowX;
-    private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
-    private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
     private GameObject avatar;
 
     /**
@@ -50,46 +65,57 @@ public class PepseGameManager extends GameManager{
 
         //arguments:
         sizeOfWindowX = windowController.getWindowDimensions().x();
-        worldsLeftEdge = -240;
-        worldsRightEdge = sizeOfWindowX + 240;
+        worldsLeftEdge = -DIST_FROM_SCREEN_SIDES;
+        worldsRightEdge = sizeOfWindowX + DIST_FROM_SCREEN_SIDES;
 
         // create the sky:
-        Sky.create(gameObjects(), windowController.getWindowDimensions(), Layer.BACKGROUND);
+        Sky.create(gameObjects(), windowController.getWindowDimensions(), SKY_LAYER);
 
         // create the sun and the halo:
         GameObject sun = Sun.create(gameObjects(),windowController.getWindowDimensions(),
-                Layer.BACKGROUND + 1, CYCLE_LENGTH);
-        SunHalo.create(gameObjects(), Layer.BACKGROUND + 2, sun, SUN_HALO_COLOR);
+                SUN_AND_MOON_LAYER, CYCLE_LENGTH);
+        SunHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, sun, SUN_HALO_COLOR);
 
         // create the moon and the night effect:
         GameObject moon = Moon.create(gameObjects(),windowController.getWindowDimensions(),
-                Layer.BACKGROUND + 1, CYCLE_LENGTH, imageReader);
-        MoonHalo.create(gameObjects(), Layer.BACKGROUND + 2, moon, MOON_HALO_COLOR);
+                SUN_AND_MOON_LAYER, CYCLE_LENGTH, imageReader);
+        MoonHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
         Night.create(gameObjects(), windowController.getWindowDimensions(),
-                Layer.DEFAULT+3, CYCLE_LENGTH);
+                NIGHT_LAYER, CYCLE_LENGTH);
 
         // create terrain:
-        Terrain terrain = new Terrain(gameObjects(), Layer.STATIC_OBJECTS,
+        Terrain terrain = new Terrain(gameObjects(), GROUND_LAYER, EXTRA_GROUND_LAYER,
                 windowController.getWindowDimensions(),SEED);
         terrain.createInRange((int) worldsLeftEdge, (int) worldsRightEdge);
 
-        Tree tree = new Tree(gameObjects(),Layer.STATIC_OBJECTS, SEED, terrain);
-        tree.createInRange((int) worldsLeftEdge, (int) worldsRightEdge,terrain);
+        Tree tree = new Tree(gameObjects(),TREE_TRUNK_LAYER, LEAF_LAYER, SEED, terrain);
+        tree.createInRange((int) worldsLeftEdge, (int) worldsRightEdge);
 
         // create avatar:
         float x = windowController.getWindowDimensions().x()/2;
         float y = windowController.getWindowDimensions().y()/2;
-        avatar = Avatar.create(gameObjects(), Layer.DEFAULT, new Vector2(x, y),
+        avatar = Avatar.create(gameObjects(), AVATAR_LAYER, new Vector2(x, y),
                 inputListener, imageReader);
 
         // set collision:
-        gameObjects().layers().shouldLayersCollide(Layer.STATIC_OBJECTS+1,
-                Layer.STATIC_OBJECTS+1, false);
-        gameObjects().layers().shouldLayersCollide(Layer.STATIC_OBJECTS,
-                Layer.STATIC_OBJECTS, false);
-        gameObjects().layers().shouldLayersCollide(Layer.STATIC_OBJECTS,
-                Layer.STATIC_OBJECTS + 1, false);
-
+        gameObjects().layers().shouldLayersCollide(EXTRA_GROUND_LAYER,
+                EXTRA_GROUND_LAYER, false);
+        gameObjects().layers().shouldLayersCollide(GROUND_LAYER,
+                GROUND_LAYER, false);
+        gameObjects().layers().shouldLayersCollide(GROUND_LAYER,
+                EXTRA_GROUND_LAYER, false);
+        gameObjects().layers().shouldLayersCollide(LEAF_LAYER,
+                TREE_TRUNK_LAYER, false);
+        gameObjects().layers().shouldLayersCollide(LEAF_LAYER,
+                EXTRA_GROUND_LAYER, false);
+        gameObjects().layers().shouldLayersCollide(LEAF_LAYER,
+                LEAF_LAYER, false);
+        gameObjects().layers().shouldLayersCollide(LEAF_LAYER,
+                AVATAR_LAYER, false);
+        gameObjects().layers().shouldLayersCollide(TREE_TRUNK_LAYER,
+                AVATAR_LAYER, true);
+        gameObjects().layers().shouldLayersCollide(GROUND_LAYER,
+                LEAF_LAYER, true);
 
         // infinite world:
         setCamera(new Camera(avatar, Vector2.ZERO,

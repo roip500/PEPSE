@@ -11,6 +11,7 @@ import pepse.util.NoiseGenerator;
 public class Terrain {
     private GameObjectCollection gameObjects;
     private int groundLayer;
+    private int extraGroundLayer;
     private float groundHeightAtX0;
     private Vector2 windowDimensions;
     private static final int TERRAIN_DEPTH = 20;
@@ -31,10 +32,11 @@ public class Terrain {
      * @param windowDimensions the size of the screen of the game.
      * @param seed the seed for the noise generator
      */
-    public Terrain(GameObjectCollection gameObjects, int groundLayer, Vector2 windowDimensions, int seed) {
-
+    public Terrain(GameObjectCollection gameObjects, int groundLayer, int extraGroundLayer,
+                   Vector2 windowDimensions, int seed) {
         this.gameObjects = gameObjects;
         this.groundLayer = groundLayer;
+        this.extraGroundLayer = extraGroundLayer;
         groundHeightAtX0 = (windowDimensions.y() * ((float) 1 / 3));
         this.windowDimensions = windowDimensions;
         noiseGenerator= new NoiseGenerator(seed);
@@ -81,7 +83,7 @@ public class Terrain {
                 gameObjects.addGameObject(curBlock, groundLayer);
             }
             else{
-                gameObjects.addGameObject(curBlock, groundLayer + 1);
+                gameObjects.addGameObject(curBlock, extraGroundLayer);
             }
         }
     }

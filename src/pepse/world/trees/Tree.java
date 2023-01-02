@@ -9,14 +9,18 @@ import pepse.world.Block;
 import pepse.world.Terrain;
 
 import java.awt.*;
+import java.util.Objects;
 import java.util.Random;
 
 public class Tree {
-    private GameObjectCollection gameObjects;
-    private int rootLayer;
-    private Terrain terrain;
-    private NoiseGenerator noiseGenerator;
+    private final GameObjectCollection gameObjects;
+    private final int rootLayer;
+    private final int leafLayer;
+    private int seed;
+    private final Terrain terrain;
+    private final NoiseGenerator noiseGenerator;
     private static final int TREE_SIZE = 10;
+    private static final int RANDOM_RANGE = 10;
     private static final Color TREE_COLOR =new Color(100, 50, 20);
 
     /**
@@ -27,9 +31,11 @@ public class Tree {
      * @param seed integer that will be used when randomly choosing the location of the tress
      * @param terrain object that represents the ground
      */
-    public Tree(GameObjectCollection gameObjects,int rootLayer, int seed, Terrain terrain){
+    public Tree(GameObjectCollection gameObjects,int rootLayer, int leafLayer,  int seed, Terrain terrain){
         this.gameObjects = gameObjects;
         this.rootLayer = rootLayer;
+        this.leafLayer = leafLayer;
+        this.seed = seed;
         this.terrain = terrain;
         noiseGenerator = new NoiseGenerator(seed);
     }
@@ -39,15 +45,16 @@ public class Tree {
      * @param minX starting x coordination
      * @param maxX ending x coordination
      */
-    public void createInRange(int minX, int maxX, Terrain terrain) {
+    public void createInRange(int minX, int maxX) {
         int newMin = (int) Math.ceil((double) minX / Block.SIZE) * Block.SIZE;
         int newMax = (int) (Math.floor((double)maxX / Block.SIZE) * Block.SIZE);
         for (int i = newMin; i <= newMax; i += Block.SIZE) {
-            int curMaxHeight =
-                    (int) ((Math.floor(terrain.GroundHeightAt(i) / Block.SIZE) * Block.SIZE));
-            float plantTree = noiseGenerator.noise(i);
+            Random rand = new Random(Objects.hash(i, seed));
+            float plantTree = rand.nextInt(RANDOM_RANGE);
             //TODO: make sure there isn't a tree at the spawn point of the avatar
-            if(plantTree >= 0.1f && plantTree <= 0.2f){ //TODO: use noise
+            if(plantTree == 1){
+                int curMaxHeight = (int) ((Math.floor(terrain.GroundHeightAt(i) / Block.SIZE)
+                        * Block.SIZE));
                 buildTree(curMaxHeight, i);
             }
         }
@@ -59,22 +66,21 @@ public class Tree {
      * @param xCord grounds x coordination
      */
     private void buildTree(int yCord, int xCord) {
-//        int treeHeight = rand.nextInt(TREE_SIZE) + 5; //TODO: use noise
-        int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE + 5);
-        //TODO: check with roi what we want to do with the leaves now that we use noise, look a bit
-        // different than before
+        int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE) + 5;
         for(int i = 0; i < treeHeight; i++){
             Block curBlock = new Block(new Vector2(xCord, yCord - (i+1) * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(TREE_COLOR)));
-            curBlock.setTag("tree");
+            curBlock.setTag("trunk");
             gameObjects.addGameObject(curBlock, rootLayer);
         }
         int leafRange = Math.min(7, treeHeight - 2);
-        yCord -= ((treeHeight + 3) * Block.SIZE);
+        yCord -= ((treeHeight + leafRange/2) * Block.SIZE);
         xCord -= (leafRange/2 * Block.SIZE);
         for(int i = 0; i < leafRange * Block.SIZE; i += Block.SIZE ){
             for(int j = 0;  j < leafRange * Block.SIZE; j += Block.SIZE){
-                new Leaf(gameObjects, new Vector2(xCord + j, yCord + i));
+                var leaf = new Leaf(new Vector2(xCord + j, yCord + i));
+                leaf.setTag("leaf");
+                gameObjects.addGameObject(leaf, leafLayer);
             }
         }
     }
