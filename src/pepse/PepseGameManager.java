@@ -87,6 +87,8 @@ public class PepseGameManager extends GameManager{
                 Layer.STATIC_OBJECTS+1, false);
         gameObjects().layers().shouldLayersCollide(Layer.STATIC_OBJECTS,
                 Layer.STATIC_OBJECTS, false);
+        gameObjects().layers().shouldLayersCollide(Layer.STATIC_OBJECTS,
+                Layer.STATIC_OBJECTS + 1, false);
 
 
         // infinite world:

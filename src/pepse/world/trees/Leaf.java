@@ -27,6 +27,8 @@ public class Leaf extends GameObject{
     private static final Random rand = new Random();
     private static final Color LEAF_COLOR = new Color(50, 200, 30);
     private Transition<Float> horizontalTransition;
+    private Transition<Float> angleFunc;
+    private Transition<Float> dimensionsFunc;
 
     /**
      * constructor for Leaf and adds it to the game.
@@ -48,7 +50,7 @@ public class Leaf extends GameObject{
      * sets the transitions of the leaf
      */
     private void setLeafTransitions(){
-        new Transition<Float>(this,
+        angleFunc = new Transition<Float>(this,
                 this.renderer()::setRenderableAngle,
                 -10F,
                 10F,
@@ -56,7 +58,7 @@ public class Leaf extends GameObject{
                 TRANSITION_CYCLE,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                 () -> lifeSpan -=1);
-        new Transition<Float>(this,
+        dimensionsFunc = new Transition<Float>(this,
                 aFloat ->  this.setDimensions(new Vector2(aFloat, aFloat)),
                 (float)LEAF_SIZE,
                 (float)(LEAF_SIZE-5),
@@ -86,9 +88,11 @@ public class Leaf extends GameObject{
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        this.removeComponent(horizontalTransition);
-        //todo check why on some leaves it stops and on others it doesn't
-        transform().setVelocityY(0);
+        setVelocity(Vector2.ZERO);
+        removeComponent(horizontalTransition);
+        removeComponent(angleFunc);
+        removeComponent(dimensionsFunc);
+        //TODO: check why on some leaves it stops and on others it doesn't
     }
 
     /**
@@ -121,6 +125,8 @@ public class Leaf extends GameObject{
                     TRANSITION_CYCLE,
                     Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                     null);
+//            this.removeComponent(dimensionsFunc); // TODO: doesn't work need to change
+//            this.removeComponent(angleFunc);// TODO: doesn't work need to change
             // this transition moves the leaves back and forth while falling
             this.renderer().fadeOut(TRANSITION_CYCLE * 10, this::restoreLeaf);
         }

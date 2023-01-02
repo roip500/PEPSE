@@ -46,6 +46,7 @@ public class Tree {
             int curMaxHeight =
                     (int) ((Math.floor(terrain.GroundHeightAt(i) / Block.SIZE) * Block.SIZE));
             float plantTree = noiseGenerator.noise(i);
+            //TODO: make sure there isn't a tree at the spawn point of the avatar
             if(plantTree >= 0.1f && plantTree <= 0.2f){ //TODO: use noise
                 buildTree(curMaxHeight, i);
             }
@@ -60,7 +61,7 @@ public class Tree {
     private void buildTree(int yCord, int xCord) {
 //        int treeHeight = rand.nextInt(TREE_SIZE) + 5; //TODO: use noise
         int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE + 5);
-        //todo check with roi what we want to do with the leaves now that we use noise, look a bit
+        //TODO: check with roi what we want to do with the leaves now that we use noise, look a bit
         // different than before
         for(int i = 0; i < treeHeight; i++){
             Block curBlock = new Block(new Vector2(xCord, yCord - (i+1) * Block.SIZE),
