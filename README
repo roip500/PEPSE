@@ -1,0 +1,42 @@
+roip500
+omer.benmoshe
+
+
+1) The deference's between the UML:
+
+
+2) How we made our world infinite:
+We started by creating HashMap<Integer, HashSet<?>> in Terrain and Tree classes.
+these HashMaps hold for each x coordination a set of block or Leaf objects that are in the
+x colum and are part of the game at the specific moment.
+We implemented the function removeInRange(minX, maxX) in Terrain and Tree classes, which will remove
+the gameObjects in the space between the minX coordination and the maxX coordination. By doing this we can
+remove the game objects from the game manager in time complexity of O(n), n being the number of objects to
+remove.
+In PepseGameManager we implemented a function update which checks the Avatars location compared to the
+edges of the world. If its closer to one edge by a distance we have determined, then the function will call upon
+the removeInRange function from Tree and Terrain and remove the game objects that are out of the range. Next
+the function we ask Tree and Terrain to create new game objects by calling createInRange, there by adding to
+the closer end a couple more columns. by repeating this action, and removing and adding the object out side the
+screen, it give the illusion that the world is in fact infinite.
+
+
+3) How we implemented the package tree:
+We created in the package 2 classes - Tree and Leaf.
+Tree is the main class that creates the trunk and the leafs, responsible for the HashMaps of both objects,
+and is in charge of adding them to the game or removing them if out of range.
+Leaf extends GameObject and responsible for all the Transitions the leaf is meant to do during the game.
+
+
+4) Dilemmas during the project:
+a - We debated if we should creat 2 leaf classes, one will be in charge of the leaf while it
+on the tree, and one while its not. The advantages of having two classes is that it will reduce the pressure
+on the game manager and will also made both classes simpler instead of having lots of moving parts inside
+one class. But after re-examining the problem we decided to create only one class, because the advantage
+of having to classes are redundant compared to the fast that we would have to implement 3 different class
+(on-tree-leaf, off-tree-leaf, manager) and the time complexity for each leaf would have been far greater then
+if it was managed by one class.
+b -
+
+
+5) Bonuses we implemented:
