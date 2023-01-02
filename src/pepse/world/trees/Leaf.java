@@ -123,4 +123,10 @@ public class Leaf extends GameObject{
         new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
                 true, this::setLeafTransitions);
     }
+
+    public void removeTransitions(){
+        removeComponent(horizontalTransition);
+        removeComponent(angleFunc);
+        removeComponent(dimensionsFunc);
+    }
 }

@@ -23,7 +23,8 @@ public class Tree {
     private static final int TREE_SIZE = 10;
     private static final int RANDOM_RANGE = 10;
     private static final Color TREE_COLOR =new Color(100, 50, 20);
-    private final HashMap<Integer, HashSet<GameObject>> map;
+    private final HashMap<Integer, HashSet<Block>> truckMap;
+    private final HashMap<Integer, HashSet<Leaf>> leafMap;
 
     /**
      * constructor for the Tree class.
@@ -40,7 +41,8 @@ public class Tree {
         this.seed = seed;
         this.terrain = terrain;
         noiseGenerator = new NoiseGenerator(seed);
-        map = new HashMap<>();
+        truckMap = new HashMap<>();
+        leafMap = new HashMap<>();
     }
 
     /**
@@ -69,30 +71,34 @@ public class Tree {
      * @param xCord grounds x coordination
      */
     private void buildTree(int yCord, int xCord) {
-        if(map.containsKey(xCord)){
+        if(truckMap.containsKey(xCord)){
             return;
         }
-        HashSet<GameObject> set = new HashSet<>();
+
+        HashSet<Block> truckSet = new HashSet<>();
         int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE) + 5;
         for(int i = 0; i < treeHeight; i++){
             Block curBlock = new Block(new Vector2(xCord, yCord - (i+1) * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(TREE_COLOR)));
             curBlock.setTag("trunk");
             gameObjects.addGameObject(curBlock, rootLayer);
-            set.add(curBlock);
+            truckSet.add(curBlock);
         }
+        truckMap.put(xCord, truckSet);
+
+        HashSet<Leaf> leafSet = new HashSet<>();
         int leafRange = Math.min(7, treeHeight - 2);
-        yCord -= ((treeHeight + leafRange/2) * Block.SIZE);
-        xCord -= (leafRange/2 * Block.SIZE);
+        int y = yCord - ((treeHeight + leafRange/2) * Block.SIZE);
+        int x = xCord - (leafRange/2 * Block.SIZE);
         for(int i = 0; i < leafRange * Block.SIZE; i += Block.SIZE ){
             for(int j = 0;  j < leafRange * Block.SIZE; j += Block.SIZE){
-                Leaf leaf = new Leaf(new Vector2(xCord + j, yCord + i));
+                Leaf leaf = new Leaf(new Vector2(x + j, y + i));
                 leaf.setTag("leaf");
                 gameObjects.addGameObject(leaf, leafLayer);
-                set.add(leaf);
+                leafSet.add(leaf);
             }
         }
-        map.put(xCord, set);
+        leafMap.put(xCord, leafSet);
     }
 
     /**
@@ -102,12 +108,16 @@ public class Tree {
      */
     public void removeInRange(int minX, int maxX){
         for(int i = minX; i<=maxX; i++){
-            if(map.containsKey(i)){
-                for (GameObject gameObject: map.get(i)) {
-                    gameObjects.removeGameObject(gameObject, rootLayer);
-                    gameObjects.removeGameObject(gameObject, leafLayer);
+            if(truckMap.containsKey(i)){
+                for (Block block: truckMap.get(i)) {
+                    gameObjects.removeGameObject(block, rootLayer);
                 }
-                map.remove(i);
+                for (Leaf leaf:leafMap.get(i)) {
+                    leaf.removeTransitions();
+                    gameObjects.removeGameObject(leaf, leafLayer);
+                }
+                truckMap.remove(i);
+                leafMap.remove(i);
             }
         }
     }
