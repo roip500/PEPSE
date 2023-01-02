@@ -41,6 +41,10 @@ Terrain class object in Tree. after lots of research we found that we can implem
 use @FunctionInterface and that way sent to Tree only the function and no more, which implements the
 encapsulation method as taught in the course.
 
+
 5) Bonuses we implemented:
 a - added a moon and a moon_halo.
-b -
+b - we created our avatar based on the character Mario.
+c - animals that walk around
+d - the avatars energy printed on the screen
+e - avatar getting points for colliding with animals
