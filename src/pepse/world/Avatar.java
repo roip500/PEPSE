@@ -47,7 +47,7 @@ public class Avatar extends GameObject {
      * @param runLeft the image that will be used when the avatar walks - 1
      * @param runRight the image that will be used when the avatar walks - 2
      */
-    public Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
+    private Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener, Renderable flyingUp, Renderable flyingSides,
                   Renderable runLeft, Renderable runRight) {
         super(topLeftCorner, dimensions, renderable);

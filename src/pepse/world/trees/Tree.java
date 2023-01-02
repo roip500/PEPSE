@@ -16,7 +16,7 @@ public class Tree {
     private final GameObjectCollection gameObjects;
     private final int rootLayer;
     private final int leafLayer;
-    private int seed;
+    private final int seed;
     private final Terrain terrain;
     private final NoiseGenerator noiseGenerator;
     private static final int TREE_SIZE = 10;
@@ -46,13 +46,13 @@ public class Tree {
      * @param maxX ending x coordination
      */
     public void createInRange(int minX, int maxX) {
+        int middle = (minX + maxX)/2;
         int newMin = (int) Math.ceil((double) minX / Block.SIZE) * Block.SIZE;
         int newMax = (int) (Math.floor((double)maxX / Block.SIZE) * Block.SIZE);
         for (int i = newMin; i <= newMax; i += Block.SIZE) {
             Random rand = new Random(Objects.hash(i, seed));
             float plantTree = rand.nextInt(RANDOM_RANGE);
-            //TODO: make sure there isn't a tree at the spawn point of the avatar
-            if(plantTree == 1){
+            if(plantTree == 1 && middle != i){
                 int curMaxHeight = (int) ((Math.floor(terrain.GroundHeightAt(i) / Block.SIZE)
                         * Block.SIZE));
                 buildTree(curMaxHeight, i);
