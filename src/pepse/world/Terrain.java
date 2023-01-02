@@ -1,6 +1,8 @@
 package pepse.world;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.RectangleRenderable;
@@ -21,6 +23,7 @@ public class Terrain {
     private static final int NOISE_STABLER_AT_X = 15;
     private static final String GROUND_TAG = "ground";
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
+    private final HashMap<Integer, HashSet<Block>> activeBlocks;
 
     private NoiseGenerator noiseGenerator;
 
@@ -40,6 +43,7 @@ public class Terrain {
         groundHeightAtX0 = (windowDimensions.y() * ((float) 1 / 3));
         this.windowDimensions = windowDimensions;
         noiseGenerator= new NoiseGenerator(seed);
+        activeBlocks = new HashMap<>();
     }
 
     /**
@@ -51,7 +55,6 @@ public class Terrain {
         float noiseReturn = noiseGenerator.noise(x/NOISE_STABLER_AT_X, NOISE_STABLER_AT_Y_AND_Z,
                 NOISE_STABLER_AT_Y_AND_Z);
         return (windowDimensions.y() - noiseReturn * NOISE_MULTIPLIER) - GROUND_LEVEL;
-        //todo
     }
 
     /**
@@ -75,6 +78,7 @@ public class Terrain {
      * @param x the x coordinate of the ground patch we want to fill
      */
     private void fillGround(int height, int x) {
+        HashSet<Block> curColumn = new HashSet<>();
         for (int i = 0; i < TERRAIN_DEPTH; i++) {
             Block curBlock = new Block(new Vector2(x, height + i * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
@@ -85,6 +89,25 @@ public class Terrain {
             else{
                 gameObjects.addGameObject(curBlock, extraGroundLayer);
             }
+            curColumn.add(curBlock);
+        }
+        activeBlocks.put(x, curColumn);
+    }
+
+    public void removeInRange(int minX, int maxX) {
+        for (int i = minX; i <= maxX; i++) {
+            if (activeBlocks.containsKey(i)){
+                deleteBlocks(i);
+                activeBlocks.remove(i);
+            }
+        }
+    }
+
+    private void deleteBlocks(int coordinate) {
+        HashSet<Block> toDelete = activeBlocks.get(coordinate);
+        for (Block curBlock : toDelete){
+            gameObjects.removeGameObject(curBlock, groundLayer);
+            gameObjects.removeGameObject(curBlock, extraGroundLayer);
         }
     }
 }
