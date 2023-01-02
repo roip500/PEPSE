@@ -69,6 +69,9 @@ public class Tree {
      * @param xCord grounds x coordination
      */
     private void buildTree(int yCord, int xCord) {
+        if(map.containsKey(xCord)){
+            return;
+        }
         HashSet<GameObject> set = new HashSet<>();
         int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE) + 5;
         for(int i = 0; i < treeHeight; i++){
