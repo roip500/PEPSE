@@ -36,7 +36,11 @@ one class. But after re-examining the problem we decided to create only one clas
 of having to classes are redundant compared to the fast that we would have to implement 3 different class
 (on-tree-leaf, off-tree-leaf, manager) and the time complexity for each leaf would have been far greater then
 if it was managed by one class.
-b -
-
+b - We wanted to sent Tree the function GroundHeightAt(float x) from Terrain but without saving the
+Terrain class object in Tree. after lots of research we found that we can implement a interface and
+use @FunctionInterface and that way sent to Tree only the function and no more, which implements the
+encapsulation method as taught in the course.
 
 5) Bonuses we implemented:
+a - added a moon and a moon_halo.
+b -
