@@ -11,11 +11,11 @@ import pepse.util.ColorSupplier;
 import pepse.util.NoiseGenerator;
 
 public class Terrain {
-    private GameObjectCollection gameObjects;
-    private int groundLayer;
-    private int extraGroundLayer;
-    private float groundHeightAtX0;
-    private Vector2 windowDimensions;
+    private final GameObjectCollection gameObjects;
+    private final int groundLayer;
+    private final int extraGroundLayer;
+    private final float groundHeightAtX0;
+    private final Vector2 windowDimensions;
     private static final int TERRAIN_DEPTH = 20;
     public static final int NOISE_MULTIPLIER = 150;
     private static final int NOISE_STABLER_AT_Y_AND_Z = 200;
@@ -24,8 +24,7 @@ public class Terrain {
     private static final String GROUND_TAG = "ground";
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private final HashMap<Integer, HashSet<Block>> activeBlocks;
-
-    private NoiseGenerator noiseGenerator;
+    private final NoiseGenerator noiseGenerator;
 
 
     /**
@@ -94,6 +93,11 @@ public class Terrain {
         activeBlocks.put(x, curColumn);
     }
 
+    /**
+     * removes all the gameObjects related to a terrain in the space between minX to maxX
+     * @param minX integer represents the starting point
+     * @param maxX integer represents the ending point
+     */
     public void removeInRange(int minX, int maxX) {
         for (int i = minX; i <= maxX; i++) {
             if (activeBlocks.containsKey(i)){
@@ -103,6 +107,10 @@ public class Terrain {
         }
     }
 
+    /**
+     * removes all the gameObjects from the gameObjects list
+     * @param coordinate key for hashmap
+     */
     private void deleteBlocks(int coordinate) {
         HashSet<Block> toDelete = activeBlocks.get(coordinate);
         for (Block curBlock : toDelete){

@@ -30,7 +30,7 @@ public class Sun{
                 new OvalRenderable(Color.YELLOW));
         sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         sun.setTag("sun");
-        new Transition<Float>(sun,
+        new Transition<>(sun,
                 aFloat -> sun.setCenter(setSunCenter(aFloat, windowDimension)),
                 1F,
                 -1F,

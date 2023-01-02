@@ -5,10 +5,7 @@ import danogl.collisions.GameObjectCollection;
 import danogl.components.CoordinateSpace;
 import danogl.components.Transition;
 import danogl.gui.ImageReader;
-import danogl.gui.rendering.OvalRenderable;
 import danogl.util.Vector2;
-
-import java.awt.*;
 
 public class Moon{
 
@@ -32,7 +29,7 @@ public class Moon{
                 imageReader.readImage("assets/moon.png",true));
         moon.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         moon.setTag("moon");
-        new Transition<Float>(moon,
+        new Transition<>(moon,
                 aFloat -> moon.setCenter(setSunCenter(aFloat, windowDimension)),
                 1F,
                 -1F,

@@ -10,6 +10,7 @@ import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
+import pepse.world.Block;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.*;
@@ -32,13 +33,15 @@ public class PepseGameManager extends GameManager{
     private static final int AVATAR_LAYER = Layer.DEFAULT;
 
     //const arguments:
-    private static final int DIST_FROM_SCREEN_SIDES = 240;
+    private static final int DIST_TO_ADD = Block.SIZE * 5;
     private static final int SEED = 417;
     private static final int CYCLE_LENGTH = 60;
     private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
 
     //classes arguments:
+    private Tree tree;
+    private Terrain terrain;
     private float worldsLeftEdge;
     private float worldsRightEdge;
     private float sizeOfWindowX;
@@ -53,7 +56,7 @@ public class PepseGameManager extends GameManager{
      * @param inputListener Contains a single method: isKeyPressed, which returns whether
      *                      a given key is currently pressed by the user or not. See its
      *                      documentation.
-     * @param windowController Contains an array of helpful, self explanatory methods
+     * @param windowController Contains an array of helpful, self-explanatory methods
      *                         concerning the window.
      */
     @Override
@@ -65,8 +68,8 @@ public class PepseGameManager extends GameManager{
 
         //arguments:
         sizeOfWindowX = windowController.getWindowDimensions().x();
-        worldsLeftEdge = -DIST_FROM_SCREEN_SIDES;
-        worldsRightEdge = sizeOfWindowX + DIST_FROM_SCREEN_SIDES;
+        worldsLeftEdge = -DIST_TO_ADD;
+        worldsRightEdge = sizeOfWindowX + DIST_TO_ADD;
 
         // create the sky:
         Sky.create(gameObjects(), windowController.getWindowDimensions(), SKY_LAYER);
@@ -84,11 +87,11 @@ public class PepseGameManager extends GameManager{
                 NIGHT_LAYER, CYCLE_LENGTH);
 
         // create terrain:
-        Terrain terrain = new Terrain(gameObjects(), GROUND_LAYER, EXTRA_GROUND_LAYER,
+        terrain = new Terrain(gameObjects(), GROUND_LAYER, EXTRA_GROUND_LAYER,
                 windowController.getWindowDimensions(),SEED);
         terrain.createInRange((int) worldsLeftEdge, (int) worldsRightEdge);
 
-        Tree tree = new Tree(gameObjects(),TREE_TRUNK_LAYER, LEAF_LAYER, SEED, terrain);
+        tree = new Tree(gameObjects(),TREE_TRUNK_LAYER, LEAF_LAYER, SEED, terrain);
         tree.createInRange((int) worldsLeftEdge, (int) worldsRightEdge);
 
         // create avatar:
@@ -125,18 +128,35 @@ public class PepseGameManager extends GameManager{
 
     }
 
+    /**
+     * maintains the non-ending world according to the avatars location
+     * @param deltaTime The time, in seconds, that passed since the last invocation
+     *                  of this method (i.e., since the last frame). This is useful
+     *                  for either accumulating the total time that passed since some
+     *                  event, or for physics integration (i.e., multiply this by
+     *                  the acceleration to get an estimate of the added velocity or
+     *                  by the velocity to get an estimate of the difference in position).
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-//        if(avatar.getCenter().x() < worldsLeftEdge + sizeOfWindowX){
-//
-//        }
-//        else if(avatar.getCenter().x() > worldsRightEdge - sizeOfWindowX){
-//
-//        }
+        if(avatar.getCenter().x() < worldsLeftEdge + sizeOfWindowX/2){
+            tree.removeInRange((int) (worldsRightEdge- DIST_TO_ADD), (int) (worldsRightEdge));
+            terrain.removeInRange((int) (worldsRightEdge- DIST_TO_ADD), (int) (worldsRightEdge));
+            worldsRightEdge -= DIST_TO_ADD;
+            tree.createInRange((int) (worldsLeftEdge - DIST_TO_ADD), (int) (worldsLeftEdge));
+            terrain.createInRange((int) (worldsLeftEdge - DIST_TO_ADD), (int) (worldsLeftEdge));
+            worldsLeftEdge -= DIST_TO_ADD;
+        }
+        else if(avatar.getCenter().x() > worldsRightEdge - sizeOfWindowX/2){
+            tree.removeInRange((int) (worldsLeftEdge), (int) (worldsLeftEdge + DIST_TO_ADD));
+            terrain.removeInRange((int) (worldsLeftEdge), (int) (worldsLeftEdge + DIST_TO_ADD));
+            worldsLeftEdge += DIST_TO_ADD;
+            tree.createInRange((int) (worldsRightEdge), (int) (worldsRightEdge + DIST_TO_ADD));
+            terrain.createInRange((int) (worldsRightEdge), (int) (worldsRightEdge + DIST_TO_ADD));
+            worldsRightEdge += DIST_TO_ADD;
+        }
     }
-
-
 
     /**
      * main function of the game - creates and runs the game

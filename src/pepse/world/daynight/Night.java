@@ -27,7 +27,7 @@ public class Night {
                 new RectangleRenderable(Color.BLACK));
         night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         night.setTag("night");
-        new Transition<Float>(night,
+        new Transition<>(night,
                 night.renderer()::setOpaqueness,
                 0F,
                 0.5F,

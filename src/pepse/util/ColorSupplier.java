@@ -1,8 +1,4 @@
 package pepse.util;
-
-import pepse.world.Block;
-import pepse.world.Terrain;
-
 import java.awt.*;
 import java.util.Random;
 

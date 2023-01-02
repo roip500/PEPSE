@@ -46,7 +46,7 @@ public class Leaf extends GameObject{
      * sets the transitions of the leaf
      */
     private void setLeafTransitions(){
-        angleFunc = new Transition<Float>(this,
+        angleFunc = new Transition<>(this,
                 this.renderer()::setRenderableAngle,
                 -20F,
                 20F,
@@ -54,7 +54,7 @@ public class Leaf extends GameObject{
                 TRANSITION_CYCLE,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                 () -> lifeSpan -= 1);
-        dimensionsFunc = new Transition<Float>(this,
+        dimensionsFunc = new Transition<>(this,
                 aFloat ->  this.setDimensions(new Vector2(aFloat, aFloat)),
                 (float)LEAF_SIZE,
                 (float)(LEAF_SIZE-5),

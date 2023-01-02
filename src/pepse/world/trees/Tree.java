@@ -1,6 +1,8 @@
 package pepse.world.trees;
 
+import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
@@ -9,8 +11,7 @@ import pepse.world.Block;
 import pepse.world.Terrain;
 
 import java.awt.*;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class Tree {
     private final GameObjectCollection gameObjects;
@@ -22,6 +23,7 @@ public class Tree {
     private static final int TREE_SIZE = 10;
     private static final int RANDOM_RANGE = 10;
     private static final Color TREE_COLOR =new Color(100, 50, 20);
+    private final HashMap<Integer, HashSet<GameObject>> map;
 
     /**
      * constructor for the Tree class.
@@ -38,6 +40,7 @@ public class Tree {
         this.seed = seed;
         this.terrain = terrain;
         noiseGenerator = new NoiseGenerator(seed);
+        map = new HashMap<>();
     }
 
     /**
@@ -66,21 +69,42 @@ public class Tree {
      * @param xCord grounds x coordination
      */
     private void buildTree(int yCord, int xCord) {
+        HashSet<GameObject> set = new HashSet<>();
         int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE) + 5;
         for(int i = 0; i < treeHeight; i++){
             Block curBlock = new Block(new Vector2(xCord, yCord - (i+1) * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(TREE_COLOR)));
             curBlock.setTag("trunk");
             gameObjects.addGameObject(curBlock, rootLayer);
+            set.add(curBlock);
         }
         int leafRange = Math.min(7, treeHeight - 2);
         yCord -= ((treeHeight + leafRange/2) * Block.SIZE);
         xCord -= (leafRange/2 * Block.SIZE);
         for(int i = 0; i < leafRange * Block.SIZE; i += Block.SIZE ){
             for(int j = 0;  j < leafRange * Block.SIZE; j += Block.SIZE){
-                var leaf = new Leaf(new Vector2(xCord + j, yCord + i));
+                Leaf leaf = new Leaf(new Vector2(xCord + j, yCord + i));
                 leaf.setTag("leaf");
                 gameObjects.addGameObject(leaf, leafLayer);
+                set.add(leaf);
+            }
+        }
+        map.put(xCord, set);
+    }
+
+    /**
+     * removes all the gameObjects related to a tree in the space between minX to maxX
+     * @param minX integer represents the starting point
+     * @param maxX integer represents the ending point
+     */
+    public void removeInRange(int minX, int maxX){
+        for(int i = minX; i<=maxX; i++){
+            if(map.containsKey(i)){
+                for (GameObject gameObject: map.get(i)) {
+                    gameObjects.removeGameObject(gameObject, rootLayer);
+                    gameObjects.removeGameObject(gameObject, leafLayer);
+                }
+                map.remove(i);
             }
         }
     }
