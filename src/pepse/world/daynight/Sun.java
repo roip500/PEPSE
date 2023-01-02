@@ -12,6 +12,9 @@ import java.awt.*;
 public class Sun{
 
     private static final int SIZE = 100;
+    private static final String SUN_TAG = "sun";
+    private static final float STARTING_ANGLE = 0.5f;
+    private static final float FINISHING_ANGLE = -1.5f;
 
     /**
      * creates the sun object and adds it to gameObjectCollection
@@ -29,11 +32,11 @@ public class Sun{
                 new Vector2(SIZE, SIZE),
                 new OvalRenderable(Color.YELLOW));
         sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        sun.setTag("sun");
+        sun.setTag(SUN_TAG);
         new Transition<>(sun,
                 aFloat -> sun.setCenter(setSunCenter(aFloat, windowDimension)),
-                1F,
-                -1F,
+                STARTING_ANGLE,
+                FINISHING_ANGLE,
                 Transition.LINEAR_INTERPOLATOR_FLOAT,
                 cycleLength,
                 Transition.TransitionType.TRANSITION_LOOP,

@@ -15,31 +15,44 @@ public class Leaf extends GameObject{
 
     private static final float LEAF_SPEED = 15;
     private final Vector2 topLeftCorner;
-    private boolean flagForVelocityX;
     private int lifeSpan;
 
-    private static final int LEAF_SIZE = 29;
-    private static final int TRANSITION_CYCLE = 3;
+    private static final float LEAF_ANGLE = 10;
+    private static final float FADE_IN_TIME = 10;
+    private static final float LEAF_SMALLER_SIZE = 24;
+    private static final int LEAF_BIGGER_SIZE = 29;
+    private static final int TRANSITION_CYCLE = 2;
+    private static final float FADE_OUT_CYCLE = TRANSITION_CYCLE * 15;
     private static final int DELAY_RANGE = 7;
-    private static final int LIFE_SPAN_RANGE = 100;
+    private static final int LIFE_SPAN_RANGE = 50;
     private static final Random rand = new Random();
     private static final Color LEAF_COLOR = new Color(50, 200, 30);
-    private Transition<Float> horizontalTransition;
+    private final Transition<Float> horizontalTransition;
     private Transition<Float> angleFunc;
     private Transition<Float> dimensionsFunc;
+    private boolean hasCollided = false;
 
     /**
      * constructor for Leaf and adds it to the game.
      * @param topLeftCorner Vector2 object that represents the location of the object in the game
      */
     public Leaf(Vector2 topLeftCorner) {
-        super(topLeftCorner,new Vector2(LEAF_SIZE,LEAF_SIZE),
+        super(topLeftCorner,new Vector2(LEAF_BIGGER_SIZE, LEAF_BIGGER_SIZE),
                 new RectangleRenderable(ColorSupplier.approximateColor(LEAF_COLOR)));
         this.topLeftCorner = topLeftCorner;
+        this.renderer().setRenderableAngle(-LEAF_ANGLE);
         this.lifeSpan = rand.nextInt(LIFE_SPAN_RANGE);
         new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
-                true, this::setLeafTransitions);
-        flagForVelocityX = false;
+                false, this::setLeafTransitions);
+        horizontalTransition = new Transition<>(this,
+                (aFloat) ->transform().setVelocityX(aFloat),
+                -LEAF_SPEED,
+                LEAF_SPEED,
+                Transition.LINEAR_INTERPOLATOR_FLOAT,
+                TRANSITION_CYCLE,
+                Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
+                null);
+        removeComponent(horizontalTransition);
     }
 
     /**
@@ -48,17 +61,17 @@ public class Leaf extends GameObject{
     private void setLeafTransitions(){
         angleFunc = new Transition<>(this,
                 this.renderer()::setRenderableAngle,
-                -20F,
-                20F,
-                Transition.CUBIC_INTERPOLATOR_FLOAT,
+                -1 * LEAF_ANGLE,
+                LEAF_ANGLE,
+                Transition.LINEAR_INTERPOLATOR_FLOAT,
                 TRANSITION_CYCLE,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                 () -> lifeSpan -= 1);
         dimensionsFunc = new Transition<>(this,
                 aFloat ->  this.setDimensions(new Vector2(aFloat, aFloat)),
-                (float)LEAF_SIZE,
-                (float)(LEAF_SIZE-5),
-                Transition.CUBIC_INTERPOLATOR_FLOAT,
+                (float) LEAF_BIGGER_SIZE,
+                (float)(LEAF_SMALLER_SIZE),
+                Transition.LINEAR_INTERPOLATOR_FLOAT,
                 TRANSITION_CYCLE,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
                 null);
@@ -74,11 +87,10 @@ public class Leaf extends GameObject{
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
+        removeTransitions();
         transform().setVelocityX(0);
         transform().setVelocityY(0);
-        removeComponent(horizontalTransition);
-        removeComponent(angleFunc);
-        removeComponent(dimensionsFunc);
+        hasCollided = true;
     }
 
     /**
@@ -94,18 +106,11 @@ public class Leaf extends GameObject{
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        if (lifeSpan == 0 && this.getVelocity().y() == 0 && !flagForVelocityX){
+        if (lifeSpan <= 0 && this.getVelocity().y() == 0 && !hasCollided){
+            addComponent(horizontalTransition);
+            transform().setVelocityX(LEAF_SPEED);
             transform().setVelocityY(LEAF_SPEED);
-            this.renderer().fadeOut(TRANSITION_CYCLE * 10, this::restoreLeaf);
-            horizontalTransition = new Transition<>(this,
-                    (aFloat) ->transform().setVelocityX(aFloat),
-                    -LEAF_SPEED,
-                    LEAF_SPEED,
-                    Transition.LINEAR_INTERPOLATOR_FLOAT,
-                    TRANSITION_CYCLE,
-                    Transition.TransitionType.TRANSITION_BACK_AND_FORTH,
-                    null);
-            flagForVelocityX = true;
+            this.renderer().fadeOut(FADE_OUT_CYCLE, this::restoreLeaf);
         }
     }
 
@@ -118,12 +123,15 @@ public class Leaf extends GameObject{
         this.setTopLeftCorner(topLeftCorner);
         transform().setVelocityY(0);
         transform().setVelocityX(0);
-        flagForVelocityX = false;
-        this.renderer().fadeIn(rand.nextInt(TRANSITION_CYCLE) * 10, null);
+        this.renderer().fadeIn(rand.nextInt(TRANSITION_CYCLE) * FADE_IN_TIME, null);
         new ScheduledTask(this,(float) rand.nextInt(DELAY_RANGE),
-                true, this::setLeafTransitions);
+                false, this::setLeafTransitions);
+        hasCollided = false;
     }
 
+    /**
+     * funtion removes all the transitions the leaf has
+     */
     public void removeTransitions(){
         removeComponent(horizontalTransition);
         removeComponent(angleFunc);

@@ -12,6 +12,12 @@ import java.awt.event.KeyEvent;
 
 public class Avatar extends GameObject {
 
+    private static final String STANDING_IMAGE_LOCATION = "assets/standing.png";
+    private static final String FLYING_UP_IMAGE_LOCATION = "assets/flying-up.png";
+    private static final String FLYING_SIDES_IMAGE_LOCATION = "assets/flying-sides.png";
+    private static final String RUN_LEFT_IMAGE_LOCATION = "assets/running-left.png";
+    private static final String RUN_RIGHT_IMAGE_LOCATION = "assets/running-right.png";
+
     private final Renderable STANDING;
     private final Renderable FLYING_UP;
     private final Renderable FLYING_SIDES;
@@ -20,8 +26,6 @@ public class Avatar extends GameObject {
     private static final int USING_RIGHT = 1;
     private static final int USING_LEFT = 0;
     private int WHICH_LEG_TO_USE;
-
-    //TODO: fix the names of the arguments
 
     private static final int JUMP_SPEED = 300;
     private static final int FLY_SPEED = 300;
@@ -61,7 +65,7 @@ public class Avatar extends GameObject {
         this.FLYING_SIDES = flyingSides;
         this.RUN_LEFT= runLeft;
         this.RUN_RIGHT= runRight;
-        this.WHICH_LEG_TO_USE = 0;
+        this.WHICH_LEG_TO_USE = USING_LEFT;
     }
 
     /**
@@ -102,20 +106,18 @@ public class Avatar extends GameObject {
         if(inTheAir && inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
                 inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && energy > 0) {
             energy -= ENERGY_CHANGE;
-            yMovementDir = new Vector2(0, -1);
+            yMovementDir = Vector2.UP;
             transform().setVelocityY(yMovementDir.y() * FLY_SPEED);
         }
         else if(!inTheAir && inputListener.isKeyPressed(KeyEvent.VK_SPACE)){
-            yMovementDir = new Vector2(0, -1);
+            yMovementDir = Vector2.UP;
             inTheAir = true;
             transform().setVelocityY(yMovementDir.y()*JUMP_SPEED);
         }
-        else if(!inTheAir && energy < HIGHEST_ENERGY){
-            energy += ENERGY_CHANGE;
-        }
         else{
+            energy += ENERGY_CHANGE;
             if(getVelocity().y() == 0){
-                yMovementDir = new Vector2(0, 1);
+                yMovementDir = Vector2.DOWN;
             }
             transform().setVelocityY(getVelocity().y() + GRAVITY_EFFECT);
         }
@@ -173,7 +175,6 @@ public class Avatar extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        transform().setVelocityY(0);
         inTheAir = false;
     }
 
@@ -191,11 +192,11 @@ public class Avatar extends GameObject {
                                 int layer, Vector2 topLeftCorner,
                                 UserInputListener inputListener,
                                 ImageReader imageReader){
-        Renderable standingImg = imageReader.readImage("assets/standing.png",true);
-        Renderable flyingUpImg = imageReader.readImage("assets/flying-up.png",true);
-        Renderable flyingSidesImg = imageReader.readImage("assets/flying-sides.png",true);
-        Renderable runLeftImg = imageReader.readImage("assets/running-left.png",true);
-        Renderable runRightImg = imageReader.readImage("assets/running-right.png",true);
+        Renderable standingImg = imageReader.readImage(STANDING_IMAGE_LOCATION,true);
+        Renderable flyingUpImg = imageReader.readImage(FLYING_UP_IMAGE_LOCATION,true);
+        Renderable flyingSidesImg = imageReader.readImage(FLYING_SIDES_IMAGE_LOCATION,true);
+        Renderable runLeftImg = imageReader.readImage(RUN_LEFT_IMAGE_LOCATION,true);
+        Renderable runRightImg = imageReader.readImage(RUN_RIGHT_IMAGE_LOCATION,true);
         Avatar avatar = new Avatar(Vector2.ZERO, new Vector2(AVATAR_SIZE, AVATAR_SIZE),
                 standingImg, inputListener, flyingUpImg, flyingSidesImg, runLeftImg, runRightImg);
         avatar.setCenter(topLeftCorner);

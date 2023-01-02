@@ -1,8 +1,6 @@
 package pepse.world.trees;
 
-import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
@@ -14,6 +12,11 @@ import java.awt.*;
 import java.util.*;
 
 public class Tree {
+    private static final int PLANT = 1;
+    private static final String TRUNK_TAG = "trunk";
+    private static final int MIN_TREE_HEIGHT = 5;
+    private static final String LEAF_TAG = "leaf";
+    private static final int MAX_NUM_OF_LEAVES_IN_ROW = 7;
     private final GameObjectCollection gameObjects;
     private final int rootLayer;
     private final int leafLayer;
@@ -25,6 +28,7 @@ public class Tree {
     private static final Color TREE_COLOR =new Color(100, 50, 20);
     private final HashMap<Integer, HashSet<Block>> truckMap;
     private final HashMap<Integer, HashSet<Leaf>> leafMap;
+    private static final int MIN_SPACE_BETWEEN_TREES = 2*Block.SIZE;
 
     /**
      * constructor for the Tree class.
@@ -51,13 +55,12 @@ public class Tree {
      * @param maxX ending x coordination
      */
     public void createInRange(int minX, int maxX) {
-        int middle = (minX + maxX)/2;
         int newMin = (int) Math.ceil((double) minX / Block.SIZE) * Block.SIZE;
         int newMax = (int) (Math.floor((double)maxX / Block.SIZE) * Block.SIZE);
-        for (int i = newMin; i <= newMax; i += Block.SIZE) {
+        for (int i = newMin; i <= newMax; i += MIN_SPACE_BETWEEN_TREES) {
             Random rand = new Random(Objects.hash(i, seed));
             float plantTree = rand.nextInt(RANDOM_RANGE);
-            if(plantTree == 1 && middle != i){
+            if(plantTree == PLANT){
                 int curMaxHeight = (int) ((Math.floor(terrain.GroundHeightAt(i) / Block.SIZE)
                         * Block.SIZE));
                 buildTree(curMaxHeight, i);
@@ -76,24 +79,24 @@ public class Tree {
         }
 
         HashSet<Block> truckSet = new HashSet<>();
-        int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE) + 5;
+        int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE) + MIN_TREE_HEIGHT;
         for(int i = 0; i < treeHeight; i++){
             Block curBlock = new Block(new Vector2(xCord, yCord - (i+1) * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(TREE_COLOR)));
-            curBlock.setTag("trunk");
+            curBlock.setTag(TRUNK_TAG);
             gameObjects.addGameObject(curBlock, rootLayer);
             truckSet.add(curBlock);
         }
         truckMap.put(xCord, truckSet);
 
         HashSet<Leaf> leafSet = new HashSet<>();
-        int leafRange = Math.min(7, treeHeight - 2);
+        int leafRange = Math.min(MAX_NUM_OF_LEAVES_IN_ROW, treeHeight - 2);
         int y = yCord - ((treeHeight + leafRange/2) * Block.SIZE);
         int x = xCord - (leafRange/2 * Block.SIZE);
         for(int i = 0; i < leafRange * Block.SIZE; i += Block.SIZE ){
             for(int j = 0;  j < leafRange * Block.SIZE; j += Block.SIZE){
                 Leaf leaf = new Leaf(new Vector2(x + j, y + i));
-                leaf.setTag("leaf");
+                leaf.setTag(LEAF_TAG);
                 gameObjects.addGameObject(leaf, leafLayer);
                 leafSet.add(leaf);
             }

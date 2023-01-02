@@ -11,10 +11,10 @@ import pepse.util.ColorSupplier;
 import pepse.util.NoiseGenerator;
 
 public class Terrain {
+    private static final int TWO_LAYERS = 2;
     private final GameObjectCollection gameObjects;
     private final int groundLayer;
     private final int extraGroundLayer;
-    private final float groundHeightAtX0;
     private final Vector2 windowDimensions;
     private static final int TERRAIN_DEPTH = 20;
     public static final int NOISE_MULTIPLIER = 150;
@@ -39,7 +39,6 @@ public class Terrain {
         this.gameObjects = gameObjects;
         this.groundLayer = groundLayer;
         this.extraGroundLayer = extraGroundLayer;
-        groundHeightAtX0 = (windowDimensions.y() * ((float) 1 / 3));
         this.windowDimensions = windowDimensions;
         noiseGenerator= new NoiseGenerator(seed);
         activeBlocks = new HashMap<>();
@@ -82,7 +81,7 @@ public class Terrain {
             Block curBlock = new Block(new Vector2(x, height + i * Block.SIZE),
                     new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
             curBlock.setTag(GROUND_TAG);
-            if(i < 2){
+            if(i < TWO_LAYERS){
                 gameObjects.addGameObject(curBlock, groundLayer);
             }
             else{

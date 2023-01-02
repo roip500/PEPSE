@@ -10,6 +10,11 @@ import danogl.util.Vector2;
 public class Moon{
 
     private static final int SIZE = 97;
+    private static final float STARTING_ANGLE = 0.5f;
+    private static final float FINISHING_ANGLE = -1.5f;
+    private static final String MOON_TAG = "moon";
+    private static final String IMAGE_LOCATION = "assets/moon.png";
+
 
     /**
      * creates the moon object and adds it to gameObjectCollection
@@ -26,13 +31,13 @@ public class Moon{
         GameObject moon = new GameObject(
                 new Vector2(0, windowDimension.y()),
                 new Vector2(SIZE, SIZE),
-                imageReader.readImage("assets/moon.png",true));
+                imageReader.readImage(IMAGE_LOCATION,true));
         moon.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        moon.setTag("moon");
+        moon.setTag(MOON_TAG);
         new Transition<>(moon,
-                aFloat -> moon.setCenter(setSunCenter(aFloat, windowDimension)),
-                1F,
-                -1F,
+                aFloat -> moon.setCenter(setMoonCenter(aFloat, windowDimension)),
+                STARTING_ANGLE,
+                FINISHING_ANGLE,
                 Transition.LINEAR_INTERPOLATOR_FLOAT,
                 cycleLength,
                 Transition.TransitionType.TRANSITION_LOOP,
@@ -47,7 +52,7 @@ public class Moon{
      * @param windowDimension dimension of the screen
      * @return Vector2 object
      */
-    private static Vector2 setSunCenter(float angle,Vector2 windowDimension){
+    private static Vector2 setMoonCenter(float angle, Vector2 windowDimension){
         Vector2 centerPoint = new Vector2(windowDimension.x()/2, windowDimension.y());
         float cos = (float) (Math.cos(angle * Math.PI));
         float sin = (float) (Math.sin(angle * Math.PI));

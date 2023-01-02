@@ -33,7 +33,7 @@ public class PepseGameManager extends GameManager{
     private static final int AVATAR_LAYER = Layer.DEFAULT;
 
     //const arguments:
-    private static final int DIST_TO_ADD = Block.SIZE * 5;
+    private static final int DIST_TO_ADD = Block.SIZE * 10;
     private static final int SEED = 417;
     private static final int CYCLE_LENGTH = 60;
     private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
@@ -84,7 +84,7 @@ public class PepseGameManager extends GameManager{
                 SUN_AND_MOON_LAYER, CYCLE_LENGTH, imageReader);
         MoonHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
         Night.create(gameObjects(), windowController.getWindowDimensions(),
-                NIGHT_LAYER, CYCLE_LENGTH);
+                NIGHT_LAYER, CYCLE_LENGTH/2f);
 
         // create terrain:
         terrain = new Terrain(gameObjects(), GROUND_LAYER, EXTRA_GROUND_LAYER,
@@ -92,7 +92,8 @@ public class PepseGameManager extends GameManager{
         terrain.createInRange((int) worldsLeftEdge, (int) worldsRightEdge);
 
         tree = new Tree(gameObjects(),TREE_TRUNK_LAYER, LEAF_LAYER, SEED, terrain);
-        tree.createInRange((int) worldsLeftEdge, (int) worldsRightEdge);
+        tree.createInRange((int) worldsLeftEdge, (int) sizeOfWindowX/2-3*Block.SIZE);
+        tree.createInRange((int) sizeOfWindowX/2+3*Block.SIZE, (int) worldsRightEdge);
 
         // create avatar:
         float x = windowController.getWindowDimensions().x()/2;
