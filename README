@@ -3,6 +3,15 @@ omer.benmoshe
 
 
 1) The deference's between the UML:
+a - We added a interface to the pepse package. at first we didn't know how to send a function
+    from one class to another so we didn't anticipate that we had to create a interface. But after
+    research and revising the course we realized that its important for the game.
+b - In the tree package we were not sure at first how we would implement the leafs, so we only had one
+    class in the package.
+c - We added to the daynight package a moon and a moon halo as part of our bonuses.
+d - The removeInRange functions in Tree and Terrain were added as part creating the infinite world.
+    We didn't realize how this effect will be implemented so we couldn't has predicted these functions
+    prior.
 
 
 2) How we made our world infinite:
@@ -14,11 +23,11 @@ the gameObjects in the space between the minX coordination and the maxX coordina
 remove the game objects from the game manager in time complexity of O(n), n being the number of objects to
 remove.
 In PepseGameManager we implemented a function update which checks the Avatars location compared to the
-edges of the world. If its closer to one edge by a distance we have determined, then the function will call upon
-the removeInRange function from Tree and Terrain and remove the game objects that are out of the range. Next
-the function we ask Tree and Terrain to create new game objects by calling createInRange, there by adding to
-the closer end a couple more columns. by repeating this action, and removing and adding the object out side the
-screen, it give the illusion that the world is in fact infinite.
+edges of the world. If its closer to one edge by a distance we have determined, then the function will
+call upon the removeInRange function from Tree and Terrain and remove the game objects that are out of
+the range. Next the function we ask Tree and Terrain to create new game objects by calling createInRange,
+there by adding to the closer end a couple more columns. by repeating this action, and removing and adding
+the object out side the screen, it give the illusion that the world is in fact infinite.
 
 
 3) How we implemented the package tree:
@@ -30,16 +39,16 @@ Leaf extends GameObject and responsible for all the Transitions the leaf is mean
 
 4) Dilemmas during the project:
 a - We debated if we should creat 2 leaf classes, one will be in charge of the leaf while it
-on the tree, and one while its not. The advantages of having two classes is that it will reduce the pressure
-on the game manager and will also made both classes simpler instead of having lots of moving parts inside
-one class. But after re-examining the problem we decided to create only one class, because the advantage
-of having to classes are redundant compared to the fast that we would have to implement 3 different class
-(on-tree-leaf, off-tree-leaf, manager) and the time complexity for each leaf would have been far greater then
-if it was managed by one class.
+    on the tree, and one while its not. The advantages of having two classes is that it will reduce the
+    pressure on the game manager and will also made both classes simpler instead of having lots of moving
+    parts inside one class. But after re-examining the problem we decided to create only one class, because
+    the advantage of having to classes are redundant compared to the fast that we would have to implement 3
+    different class. (on-tree-leaf, off-tree-leaf, manager) and the time complexity for each leaf would have
+    been far greater then if it was managed by one class.
 b - We wanted to sent Tree the function GroundHeightAt(float x) from Terrain but without saving the
-Terrain class object in Tree. after lots of research we found that we can implement a interface and
-use @FunctionInterface and that way sent to Tree only the function and no more, which implements the
-encapsulation method as taught in the course.
+    Terrain class object in Tree. after lots of research we found that we can implement a interface and
+    use @FunctionInterface and that way sent to Tree only the function and no more, which implements the
+    encapsulation method as taught in the course.
 
 
 5) Bonuses we implemented:
