@@ -10,7 +10,7 @@ import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 import pepse.util.NoiseGenerator;
 
-public class Terrain {
+public class Terrain  implements GroundHeightCalculator{
     private static final int TWO_LAYERS = 2;
     private final GameObjectCollection gameObjects;
     private final int groundLayer;

@@ -6,7 +6,7 @@ import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 import pepse.util.NoiseGenerator;
 import pepse.world.Block;
-import pepse.world.Terrain;
+import pepse.world.GroundHeightCalculator;
 
 import java.awt.*;
 import java.util.*;
@@ -21,7 +21,7 @@ public class Tree {
     private final int rootLayer;
     private final int leafLayer;
     private final int seed;
-    private final Terrain terrain;
+    private final GroundHeightCalculator HeightFunc;
     private final NoiseGenerator noiseGenerator;
     private static final int TREE_SIZE = 10;
     private static final int RANDOM_RANGE = 10;
@@ -36,14 +36,16 @@ public class Tree {
      * @param gameObjects list of game objects in the game
      * @param rootLayer Layer the tree object will be in the game
      * @param seed integer that will be used when randomly choosing the location of the tress
-     * @param terrain object that represents the ground
+     * @param HeightFunc functional interface that calculates the height of the ground at a certain
+     *                   coordinate.
      */
-    public Tree(GameObjectCollection gameObjects,int rootLayer, int leafLayer,  int seed, Terrain terrain){
+    public Tree(GameObjectCollection gameObjects,int rootLayer, int leafLayer,  int seed,
+                GroundHeightCalculator HeightFunc){
         this.gameObjects = gameObjects;
         this.rootLayer = rootLayer;
         this.leafLayer = leafLayer;
         this.seed = seed;
-        this.terrain = terrain;
+        this.HeightFunc = HeightFunc;
         noiseGenerator = new NoiseGenerator(seed);
         truckMap = new HashMap<>();
         leafMap = new HashMap<>();
@@ -61,7 +63,7 @@ public class Tree {
             Random rand = new Random(Objects.hash(i, seed));
             float plantTree = rand.nextInt(RANDOM_RANGE);
             if(plantTree == PLANT){
-                int curMaxHeight = (int) ((Math.floor(terrain.GroundHeightAt(i) / Block.SIZE)
+                int curMaxHeight = (int) ((Math.floor(HeightFunc.GroundHeightAt(i) / Block.SIZE)
                         * Block.SIZE));
                 buildTree(curMaxHeight, i);
             }
