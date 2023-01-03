@@ -112,6 +112,9 @@ public class Leaf extends GameObject{
             transform().setVelocityY(LEAF_SPEED);
             this.renderer().fadeOut(FADE_OUT_CYCLE, this::restoreLeaf);
         }
+        else if (hasCollided && getVelocity().x() != 0) {
+            transform().setVelocityX(0);
+        }
     }
 
     /**
