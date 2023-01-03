@@ -6,38 +6,43 @@ import danogl.collisions.GameObjectCollection;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.Renderable;
+import danogl.util.Counter;
 import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
 
 public class Avatar extends GameObject {
 
+    //images for avatar:
     private static final String STANDING_IMAGE_LOCATION = "assets/standing.png";
     private static final String FLYING_UP_IMAGE_LOCATION = "assets/flying-up.png";
     private static final String FLYING_SIDES_IMAGE_LOCATION = "assets/flying-sides.png";
     private static final String RUN_LEFT_IMAGE_LOCATION = "assets/running-left.png";
     private static final String RUN_RIGHT_IMAGE_LOCATION = "assets/running-right.png";
 
-    private final Renderable STANDING;
-    private final Renderable FLYING_UP;
-    private final Renderable FLYING_SIDES;
-    private final Renderable RUN_LEFT;
-    private final Renderable RUN_RIGHT;
+    // global consts:
     private static final int USING_RIGHT = 1;
     private static final int USING_LEFT = 0;
-    private int WHICH_LEG_TO_USE;
-
     private static final int JUMP_SPEED = 300;
     private static final int FLY_SPEED = 300;
     private static final float HIGHEST_ENERGY = 100F;
     private static final int GRAVITY_EFFECT= 10;
     private static final int WALKING_SPEED = 300;
     private static final int AVATAR_SIZE = 60;
-    private static final float ENERGY_CHANGE = 0.5F;
+
+    // parameters to be used:
+    private final int maxEnergy;
+    private final Counter energyCounter;
+    private final Counter scoreCounter;
+    private final Renderable STANDING;
+    private final Renderable FLYING_UP;
+    private final Renderable FLYING_SIDES;
+    private final Renderable RUN_LEFT;
+    private final Renderable RUN_RIGHT;
+    private int WHICH_LEG_TO_USE;
     private final UserInputListener inputListener;
     Vector2 yMovementDir;
     private boolean inTheAir;
-    private float energy;
 
     /**
      * Constructs the avatar.
@@ -50,14 +55,17 @@ public class Avatar extends GameObject {
      * @param flyingSides the image that will be used when the avatar flies and moves side-ways
      * @param runLeft the image that will be used when the avatar walks - 1
      * @param runRight the image that will be used when the avatar walks - 2
+     * @param energyCounter counter object that represents the energy the avatar has
+     * @param scoreCounter counter object that represents the score the avatar has
      */
     private Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener, Renderable flyingUp, Renderable flyingSides,
-                  Renderable runLeft, Renderable runRight) {
+                  Renderable runLeft, Renderable runRight, danogl.util.Counter energyCounter,
+                   danogl.util.Counter scoreCounter) {
         super(topLeftCorner, dimensions, renderable);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
+        maxEnergy = energyCounter.value();
         this.inputListener = inputListener;
-        this.energy = HIGHEST_ENERGY;
         this.inTheAir = false;
         this.yMovementDir = Vector2.ZERO;
         this.STANDING = renderable;
@@ -66,6 +74,8 @@ public class Avatar extends GameObject {
         this.RUN_LEFT= runLeft;
         this.RUN_RIGHT= runRight;
         this.WHICH_LEG_TO_USE = USING_LEFT;
+        this.energyCounter = energyCounter;
+        this.scoreCounter = scoreCounter;
     }
 
     /**
@@ -104,8 +114,8 @@ public class Avatar extends GameObject {
      */
     private void setVelocityY(){
         if(inTheAir && inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
-                inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && energy > 0) {
-            energy -= ENERGY_CHANGE;
+                inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && energyCounter.value() > 0) {
+            energyCounter.decrement();
             yMovementDir = Vector2.UP;
             transform().setVelocityY(yMovementDir.y() * FLY_SPEED);
         }
@@ -115,7 +125,9 @@ public class Avatar extends GameObject {
             transform().setVelocityY(yMovementDir.y()*JUMP_SPEED);
         }
         else{
-            energy += ENERGY_CHANGE;
+            if(!inTheAir && energyCounter.value() < maxEnergy){
+                energyCounter.increment();
+            }
             if(getVelocity().y() == 0){
                 yMovementDir = Vector2.DOWN;
             }
@@ -191,14 +203,17 @@ public class Avatar extends GameObject {
     public static Avatar create(GameObjectCollection gameObjects,
                                 int layer, Vector2 topLeftCorner,
                                 UserInputListener inputListener,
-                                ImageReader imageReader){
+                                ImageReader imageReader,
+                                danogl.util.Counter energyCounter,
+                                danogl.util.Counter scoreCounter){
         Renderable standingImg = imageReader.readImage(STANDING_IMAGE_LOCATION,true);
         Renderable flyingUpImg = imageReader.readImage(FLYING_UP_IMAGE_LOCATION,true);
         Renderable flyingSidesImg = imageReader.readImage(FLYING_SIDES_IMAGE_LOCATION,true);
         Renderable runLeftImg = imageReader.readImage(RUN_LEFT_IMAGE_LOCATION,true);
         Renderable runRightImg = imageReader.readImage(RUN_RIGHT_IMAGE_LOCATION,true);
         Avatar avatar = new Avatar(Vector2.ZERO, new Vector2(AVATAR_SIZE, AVATAR_SIZE),
-                standingImg, inputListener, flyingUpImg, flyingSidesImg, runLeftImg, runRightImg);
+                standingImg, inputListener, flyingUpImg, flyingSidesImg, runLeftImg,
+                runRightImg, energyCounter, scoreCounter);
         avatar.setCenter(topLeftCorner);
         gameObjects.addGameObject(avatar, layer);
         return avatar;

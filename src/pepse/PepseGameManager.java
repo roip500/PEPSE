@@ -8,11 +8,9 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
+import danogl.util.Counter;
 import danogl.util.Vector2;
-import pepse.world.Avatar;
-import pepse.world.Block;
-import pepse.world.Sky;
-import pepse.world.Terrain;
+import pepse.world.*;
 import pepse.world.daynight.*;
 import pepse.world.trees.Tree;
 
@@ -33,9 +31,13 @@ public class PepseGameManager extends GameManager{
     private static final int AVATAR_LAYER = Layer.DEFAULT;
 
     //const arguments:
+    private static final String TXT_FOR_ENERGY = "ENERGY: ";
+    private static final String TXT_FOR_SCORE = "SCORE: ";
     private static final int DIST_TO_ADD = Block.SIZE * 10;
     private static final int SEED = 417;
+    private static final int AVATARS_ENERGY = 200;
     private static final int CYCLE_LENGTH = 60;
+    private static final int SIZE_OF_TXT = 30;
     private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
 
@@ -91,15 +93,28 @@ public class PepseGameManager extends GameManager{
                 windowController.getWindowDimensions(),SEED);
         terrain.createInRange((int) worldsLeftEdge, (int) worldsRightEdge);
 
+        //create trees:
         tree = new Tree(gameObjects(),TREE_TRUNK_LAYER, LEAF_LAYER, SEED, terrain);
         tree.createInRange((int) worldsLeftEdge, (int) sizeOfWindowX/2-3*Block.SIZE);
         tree.createInRange((int) sizeOfWindowX/2+3*Block.SIZE, (int) worldsRightEdge);
+
+        //create counters:
+        Counter energyCounter = new Counter(AVATARS_ENERGY);
+        GraphicCounter energyCounterObject = new GraphicCounter(energyCounter, Vector2.ZERO,
+                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_ENERGY);
+        gameObjects().addGameObject(energyCounterObject, Layer.UI);
+        Counter scoreCounter = new Counter(0);
+        GraphicCounter scoreCounterObject = new GraphicCounter(scoreCounter,
+                new Vector2(sizeOfWindowX - SIZE_OF_TXT*6, 0),
+                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
+        gameObjects().addGameObject(scoreCounterObject, Layer.UI);
+
 
         // create avatar:
         float x = windowController.getWindowDimensions().x()/2;
         float y = windowController.getWindowDimensions().y()/2;
         avatar = Avatar.create(gameObjects(), AVATAR_LAYER, new Vector2(x, y),
-                inputListener, imageReader);
+                inputListener, imageReader, energyCounter, scoreCounter);
 
         // set collision:
         gameObjects().layers().shouldLayersCollide(EXTRA_GROUND_LAYER,
