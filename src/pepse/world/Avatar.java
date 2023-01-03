@@ -19,10 +19,14 @@ public class Avatar extends GameObject {
     private static final String FLYING_SIDES_IMAGE_LOCATION = "assets/flying-sides.png";
     private static final String RUN_LEFT_IMAGE_LOCATION = "assets/running-left.png";
     private static final String RUN_RIGHT_IMAGE_LOCATION = "assets/running-right.png";
+    private static final String SEMI_RUN_LEFT_IMAGE_LOCATION = "assets/semi-running-left.png";
+    private static final String SEMI_RUN_RIGHT_IMAGE_LOCATION = "assets/semi-running-right.png";
 
     // global consts:
-    private static final int USING_RIGHT = 1;
-    private static final int USING_LEFT = 0;
+    private static final int USING_RIGHT = 3;
+    private static final int USING_SEMI_RIGHT = 2;
+    private static final int USING_LEFT = 1;
+    private static final int USING_SEMI_LEFT = 0;
     private static final int JUMP_SPEED = 300;
     private static final int FLY_SPEED = 300;
     private static final float HIGHEST_ENERGY = 100F;
@@ -34,15 +38,19 @@ public class Avatar extends GameObject {
     private final int maxEnergy;
     private final Counter energyCounter;
     private final Counter scoreCounter;
-    private final Renderable STANDING;
-    private final Renderable FLYING_UP;
-    private final Renderable FLYING_SIDES;
-    private final Renderable RUN_LEFT;
-    private final Renderable RUN_RIGHT;
+    private final Renderable standing;
+    private final Renderable flyingUp;
+    private final Renderable flyingSides;
+    private final Renderable runLeft;
+    private final Renderable runRight;
+    private final Renderable semiRunLeft;
+    private final Renderable semiRunRight;
     private int WHICH_LEG_TO_USE;
     private final UserInputListener inputListener;
     Vector2 yMovementDir;
     private boolean inTheAir;
+    private boolean flying;
+
 
     /**
      * Constructs the avatar.
@@ -61,19 +69,22 @@ public class Avatar extends GameObject {
     private Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener, Renderable flyingUp, Renderable flyingSides,
                   Renderable runLeft, Renderable runRight, danogl.util.Counter energyCounter,
-                   danogl.util.Counter scoreCounter) {
+                   danogl.util.Counter scoreCounter, Renderable semiRunLeft, Renderable semiRunRight) {
         super(topLeftCorner, dimensions, renderable);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         maxEnergy = energyCounter.value();
         this.inputListener = inputListener;
         this.inTheAir = false;
+        this.flying = false;
         this.yMovementDir = Vector2.ZERO;
-        this.STANDING = renderable;
-        this.FLYING_UP = flyingUp;
-        this.FLYING_SIDES = flyingSides;
-        this.RUN_LEFT= runLeft;
-        this.RUN_RIGHT= runRight;
-        this.WHICH_LEG_TO_USE = USING_LEFT;
+        this.standing = renderable;
+        this.flyingUp = flyingUp;
+        this.flyingSides = flyingSides;
+        this.runLeft = runLeft;
+        this.runRight = runRight;
+        this.semiRunLeft = semiRunLeft;
+        this.semiRunRight = semiRunRight;
+        this.WHICH_LEG_TO_USE = USING_SEMI_LEFT;
         this.energyCounter = energyCounter;
         this.scoreCounter = scoreCounter;
     }
@@ -115,6 +126,7 @@ public class Avatar extends GameObject {
     private void setVelocityY(){
         if(inTheAir && inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
                 inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && energyCounter.value() > 0) {
+            flying = true;
             energyCounter.decrement();
             yMovementDir = Vector2.UP;
             transform().setVelocityY(yMovementDir.y() * FLY_SPEED);
@@ -139,42 +151,35 @@ public class Avatar extends GameObject {
      * sets the image of the avatar
      */
     private void setImage(){
-        if(getVelocity().x() > 0){
-            if(inTheAir){
-                renderer().setRenderable(FLYING_SIDES);
-            }
-            else if(this.WHICH_LEG_TO_USE == USING_LEFT){
-                this.WHICH_LEG_TO_USE = USING_RIGHT;
-                renderer().setRenderable(RUN_RIGHT);
+        if(getVelocity().x() == 0){
+            if(flying){
+                renderer().setRenderable(flyingUp);
             }
             else{
-                this.WHICH_LEG_TO_USE = USING_LEFT;
-                renderer().setRenderable(RUN_LEFT);
+                renderer().setRenderable(standing);
             }
-            renderer().setIsFlippedHorizontally(false);
+            return;
         }
-        else if(getVelocity().x() < 0){
-            if(inTheAir){
-                renderer().setRenderable(FLYING_SIDES);
-            }
-            else if(this.WHICH_LEG_TO_USE == USING_LEFT){
-                this.WHICH_LEG_TO_USE = USING_RIGHT;
-                renderer().setRenderable(RUN_RIGHT);
-            }
-            else{
-                this.WHICH_LEG_TO_USE = USING_LEFT;
-                renderer().setRenderable(RUN_LEFT);
-            }
-            renderer().setIsFlippedHorizontally(true);
+        if(flying){
+            renderer().setRenderable(flyingSides);
         }
-        else{
-            if(inTheAir){
-                renderer().setRenderable(FLYING_UP);
-            }
-            else{
-                renderer().setRenderable(STANDING);
-            }
+        else if(this.WHICH_LEG_TO_USE == USING_SEMI_LEFT){
+            renderer().setRenderable(semiRunLeft);
         }
+        else if(this.WHICH_LEG_TO_USE == USING_LEFT){
+            renderer().setRenderable(runLeft);
+        }
+        else if(this.WHICH_LEG_TO_USE == USING_SEMI_RIGHT){
+            renderer().setRenderable(semiRunRight);
+        }
+        else if(this.WHICH_LEG_TO_USE == USING_RIGHT){
+            renderer().setRenderable(runRight);
+        }
+        this.WHICH_LEG_TO_USE++;
+        if(this.WHICH_LEG_TO_USE > USING_RIGHT){
+            this.WHICH_LEG_TO_USE = USING_SEMI_LEFT;
+        }
+        renderer().setIsFlippedHorizontally(!(getVelocity().x() > 0));
     }
 
     /**
@@ -188,6 +193,7 @@ public class Avatar extends GameObject {
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         inTheAir = false;
+        flying = false;
     }
 
     /**
@@ -211,9 +217,11 @@ public class Avatar extends GameObject {
         Renderable flyingSidesImg = imageReader.readImage(FLYING_SIDES_IMAGE_LOCATION,true);
         Renderable runLeftImg = imageReader.readImage(RUN_LEFT_IMAGE_LOCATION,true);
         Renderable runRightImg = imageReader.readImage(RUN_RIGHT_IMAGE_LOCATION,true);
+        Renderable semiRunLeftImg = imageReader.readImage(SEMI_RUN_LEFT_IMAGE_LOCATION,true);
+        Renderable semiRunRightImg = imageReader.readImage(SEMI_RUN_RIGHT_IMAGE_LOCATION,true);
         Avatar avatar = new Avatar(Vector2.ZERO, new Vector2(AVATAR_SIZE, AVATAR_SIZE),
                 standingImg, inputListener, flyingUpImg, flyingSidesImg, runLeftImg,
-                runRightImg, energyCounter, scoreCounter);
+                runRightImg, energyCounter, scoreCounter, semiRunLeftImg, semiRunRightImg);
         avatar.setCenter(topLeftCorner);
         gameObjects.addGameObject(avatar, layer);
         return avatar;
