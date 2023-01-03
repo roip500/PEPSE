@@ -49,6 +49,7 @@ public class Terrain  implements GroundHeightCalculator{
      * @param x the X coordinate that we want to calculate the ground height
      * @return the calculated height.
      */
+    @Override
     public float GroundHeightAt(float x) {
         float noiseReturn = noiseGenerator.noise(x/NOISE_STABLER_AT_X, NOISE_STABLER_AT_Y_AND_Z,
                 NOISE_STABLER_AT_Y_AND_Z);

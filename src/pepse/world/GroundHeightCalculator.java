@@ -4,5 +4,5 @@ package pepse.world;
  */
 @FunctionalInterface
 public interface GroundHeightCalculator {
-    public float GroundHeightAt(float x);
+    float GroundHeightAt(float x);
 }
