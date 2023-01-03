@@ -49,11 +49,15 @@ b - We wanted to sent Tree the function GroundHeightAt(float x) from Terrain but
     Terrain class object in Tree. after lots of research we found that we can implement a interface and
     use @FunctionInterface and that way sent to Tree only the function and no more, which implements the
     encapsulation method as taught in the course.
+c - We wanted to use a Counter object for the avatars energy but we were instructed to reduce the energy
+    by 0.5 each round and the counter object only takes integers not floats. We fixed this problem by increasing
+    the max energy from 100 to 200 and the changing number from 0.5 to 1 and that way we still keep the same
+    ratio but can now use the Counter object.
 
 
 5) Bonuses we implemented:
 a - added a moon and a moon_halo.
 b - we created our avatar based on the character Mario.
 c - animals that walk around
-d - the avatars energy printed on the screen
+d - the avatars energy and score are printed on the screen
 e - avatar getting points for colliding with animals
