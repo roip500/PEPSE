@@ -50,9 +50,9 @@ b - We wanted to sent Tree the function GroundHeightAt(float x) from Terrain but
     use @FunctionInterface and that way sent to Tree only the function and no more, which implements the
     encapsulation method as taught in the course.
 c - We wanted to use a Counter object for the avatars energy but we were instructed to reduce the energy
-    by 0.5 each round and the counter object only takes integers not floats. We fixed this problem by increasing
-    the max energy from 100 to 200 and the changing number from 0.5 to 1 and that way we still keep the same
-    ratio but can now use the Counter object.
+    by 0.5 each round and the counter object only takes integers not floats. We fixed this problem by
+    increasing the max energy from 100 to 200 and the changing number from 0.5 to 1 and that way we still keep
+    the same ratio but can now use the Counter object.
 
 
 5) Bonuses we implemented:
