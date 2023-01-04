@@ -29,6 +29,7 @@ public class Avatar extends GameObject {
     private static final int USING_SEMI_LEFT = 0;
     private static final int JUMP_SPEED = 300;
     private static final int FLY_SPEED = 300;
+    private static final int FALLING_MAX_SPEED = 400;
     private static final int GRAVITY_EFFECT= 10;
     private static final int WALKING_SPEED = 300;
     private static final int AVATAR_SIZE = 60;
@@ -142,7 +143,9 @@ public class Avatar extends GameObject {
             if(getVelocity().y() == 0){
                 yMovementDir = Vector2.DOWN;
             }
-            transform().setVelocityY(getVelocity().y() + GRAVITY_EFFECT);
+            if(transform().getVelocity().y() < FALLING_MAX_SPEED){
+                transform().setVelocityY(getVelocity().y() + GRAVITY_EFFECT);
+            }
         }
     }
 
