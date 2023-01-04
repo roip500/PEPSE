@@ -29,7 +29,6 @@ public class Avatar extends GameObject {
     private static final int USING_SEMI_LEFT = 0;
     private static final int JUMP_SPEED = 300;
     private static final int FLY_SPEED = 300;
-    private static final float HIGHEST_ENERGY = 100F;
     private static final int GRAVITY_EFFECT= 10;
     private static final int WALKING_SPEED = 300;
     private static final int AVATAR_SIZE = 60;

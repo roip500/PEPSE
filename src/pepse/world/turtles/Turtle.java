@@ -1,10 +1,10 @@
-package pepse.world;
+package pepse.world.turtles;
 
 import danogl.GameObject;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
-public class ExtraCharacter extends GameObject {
+public class Turtle extends GameObject {
     /**
      * Construct a new GameObject instance.
      *
@@ -14,7 +14,7 @@ public class ExtraCharacter extends GameObject {
      * @param renderable    The renderable representing the object. Can be null, in which case
      *                      the GameObject will not be rendered.
      */
-    public ExtraCharacter(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
+    public Turtle(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable) {
         super(topLeftCorner, dimensions, renderable);
     }
 }

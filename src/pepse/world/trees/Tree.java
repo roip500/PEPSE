@@ -76,10 +76,13 @@ public class Tree {
      * @param xCord grounds x coordination
      */
     private void buildTree(int yCord, int xCord) {
+
+        //check tree doesn't exist in location:
         if(truckMap.containsKey(xCord)){
             return;
         }
 
+        //create trunk:
         HashSet<Block> truckSet = new HashSet<>();
         int treeHeight = (int) (Math.abs(noiseGenerator.noise(xCord, yCord))*TREE_SIZE) + MIN_TREE_HEIGHT;
         for(int i = 0; i < treeHeight; i++){
@@ -91,6 +94,7 @@ public class Tree {
         }
         truckMap.put(xCord, truckSet);
 
+        //create leafs:
         HashSet<Leaf> leafSet = new HashSet<>();
         int leafRange = Math.min(MAX_NUM_OF_LEAVES_IN_ROW, treeHeight - 2);
         int y = yCord - ((treeHeight + leafRange/2) * Block.SIZE);
