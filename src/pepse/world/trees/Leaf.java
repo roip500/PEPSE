@@ -20,7 +20,7 @@ public class Leaf extends GameObject{
     private static final float LEAF_ANGLE = 10;
     private static final float FADE_IN_TIME = 10;
     private static final float LEAF_SMALLER_SIZE = 24;
-    private static final int LEAF_BIGGER_SIZE = 29;
+    private static final float LEAF_BIGGER_SIZE = 29;
     private static final int TRANSITION_CYCLE = 2;
     private static final float FADE_OUT_CYCLE = TRANSITION_CYCLE * 15;
     private static final int DELAY_RANGE = 7;
@@ -69,8 +69,8 @@ public class Leaf extends GameObject{
                 () -> lifeSpan -= 1);
         dimensionsFunc = new Transition<>(this,
                 aFloat ->  this.setDimensions(new Vector2(aFloat, aFloat)),
-                (float) LEAF_BIGGER_SIZE,
-                (float)(LEAF_SMALLER_SIZE),
+                LEAF_BIGGER_SIZE,
+                LEAF_SMALLER_SIZE,
                 Transition.LINEAR_INTERPOLATOR_FLOAT,
                 TRANSITION_CYCLE,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH,

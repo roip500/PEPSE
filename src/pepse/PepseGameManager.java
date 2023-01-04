@@ -13,6 +13,7 @@ import danogl.util.Vector2;
 import pepse.world.*;
 import pepse.world.daynight.*;
 import pepse.world.trees.Tree;
+import pepse.world.turtles.Turtles;
 
 import java.awt.*;
 
@@ -29,6 +30,7 @@ public class PepseGameManager extends GameManager{
     private static final int SUN_AND_MOON_LAYER = Layer.BACKGROUND + 1;
     private static final int SUN_AND_MOON_HALO_LAYER = Layer.BACKGROUND + 2;
     private static final int AVATAR_LAYER = Layer.DEFAULT;
+    private static final int TURTLE_LAYER = Layer.DEFAULT;
 
     //const arguments:
     private static final String TXT_FOR_ENERGY = "ENERGY: ";
@@ -40,6 +42,7 @@ public class PepseGameManager extends GameManager{
     private static final int SIZE_OF_TXT = 30;
     private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
+    private static final int RANGE_FOR_TURTLE_CREATION = 1000;
 
     //classes arguments:
     private Tree tree;
@@ -48,6 +51,7 @@ public class PepseGameManager extends GameManager{
     private float worldsRightEdge;
     private float sizeOfWindowX;
     private GameObject avatar;
+    private Turtles turtlesMain;
 
     /**
      * initializes the game
@@ -109,6 +113,11 @@ public class PepseGameManager extends GameManager{
                 new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
         gameObjects().addGameObject(scoreCounterObject, Layer.UI);
 
+        //create turtles:
+        turtlesMain = new Turtles(RANGE_FOR_TURTLE_CREATION, terrain, gameObjects(), TURTLE_LAYER,
+                imageReader);
+        turtlesMain.createInRange((int) worldsLeftEdge, (int) sizeOfWindowX/2-3*Block.SIZE);
+
 
         // create avatar:
         float x = windowController.getWindowDimensions().x()/2;
@@ -135,6 +144,10 @@ public class PepseGameManager extends GameManager{
                 AVATAR_LAYER, true);
         gameObjects().layers().shouldLayersCollide(GROUND_LAYER,
                 LEAF_LAYER, true);
+        gameObjects().layers().shouldLayersCollide(AVATAR_LAYER,
+                TURTLE_LAYER, true);
+        gameObjects().layers().shouldLayersCollide(TREE_TRUNK_LAYER,
+                TURTLE_LAYER, true); //TODO:check if necessary
 
         // infinite world:
         setCamera(new Camera(avatar, Vector2.ZERO,
@@ -159,17 +172,21 @@ public class PepseGameManager extends GameManager{
         if(avatar.getCenter().x() < worldsLeftEdge + sizeOfWindowX/2){
             tree.removeInRange((int) (worldsRightEdge- DIST_TO_ADD), (int) (worldsRightEdge));
             terrain.removeInRange((int) (worldsRightEdge- DIST_TO_ADD), (int) (worldsRightEdge));
+            turtlesMain.removeInRange((int) (worldsRightEdge- DIST_TO_ADD), (int) (worldsRightEdge));
             worldsRightEdge -= DIST_TO_ADD;
             tree.createInRange((int) (worldsLeftEdge - DIST_TO_ADD), (int) (worldsLeftEdge));
             terrain.createInRange((int) (worldsLeftEdge - DIST_TO_ADD), (int) (worldsLeftEdge));
+            turtlesMain.createInRange((int) (worldsLeftEdge - DIST_TO_ADD), (int) (worldsLeftEdge));
             worldsLeftEdge -= DIST_TO_ADD;
         }
         else if(avatar.getCenter().x() > worldsRightEdge - sizeOfWindowX/2){
             tree.removeInRange((int) (worldsLeftEdge), (int) (worldsLeftEdge + DIST_TO_ADD));
             terrain.removeInRange((int) (worldsLeftEdge), (int) (worldsLeftEdge + DIST_TO_ADD));
+            turtlesMain.removeInRange((int) (worldsLeftEdge), (int) (worldsLeftEdge + DIST_TO_ADD));
             worldsLeftEdge += DIST_TO_ADD;
             tree.createInRange((int) (worldsRightEdge), (int) (worldsRightEdge + DIST_TO_ADD));
             terrain.createInRange((int) (worldsRightEdge), (int) (worldsRightEdge + DIST_TO_ADD));
+            turtlesMain.createInRange((int) (worldsRightEdge), (int) (worldsRightEdge + DIST_TO_ADD));
             worldsRightEdge += DIST_TO_ADD;
         }
     }

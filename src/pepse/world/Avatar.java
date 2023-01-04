@@ -8,6 +8,7 @@ import danogl.gui.UserInputListener;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Counter;
 import danogl.util.Vector2;
+import pepse.world.turtles.Turtle;
 
 import java.awt.event.KeyEvent;
 
@@ -33,6 +34,7 @@ public class Avatar extends GameObject {
     private static final int GRAVITY_EFFECT= 10;
     private static final int WALKING_SPEED = 300;
     private static final int AVATAR_SIZE = 60;
+    private static final int POINTS_FOR_HIT = 5;
 
     // parameters to be used:
     private final int maxEnergy;
@@ -45,7 +47,7 @@ public class Avatar extends GameObject {
     private final Renderable runRight;
     private final Renderable semiRunLeft;
     private final Renderable semiRunRight;
-    private int WHICH_LEG_TO_USE;
+    private int whichLegToUse;
     private final UserInputListener inputListener;
     Vector2 yMovementDir;
     private boolean inTheAir;
@@ -84,7 +86,7 @@ public class Avatar extends GameObject {
         this.runRight = runRight;
         this.semiRunLeft = semiRunLeft;
         this.semiRunRight = semiRunRight;
-        this.WHICH_LEG_TO_USE = USING_SEMI_LEFT;
+        this.whichLegToUse = USING_SEMI_LEFT;
         this.energyCounter = energyCounter;
         this.scoreCounter = scoreCounter;
     }
@@ -165,21 +167,21 @@ public class Avatar extends GameObject {
         if(flying){
             renderer().setRenderable(flyingSides);
         }
-        else if(this.WHICH_LEG_TO_USE == USING_SEMI_LEFT){
+        else if(this.whichLegToUse == USING_SEMI_LEFT){
             renderer().setRenderable(semiRunLeft);
         }
-        else if(this.WHICH_LEG_TO_USE == USING_LEFT){
+        else if(this.whichLegToUse == USING_LEFT){
             renderer().setRenderable(runLeft);
         }
-        else if(this.WHICH_LEG_TO_USE == USING_SEMI_RIGHT){
+        else if(this.whichLegToUse == USING_SEMI_RIGHT){
             renderer().setRenderable(semiRunRight);
         }
-        else if(this.WHICH_LEG_TO_USE == USING_RIGHT){
+        else if(this.whichLegToUse == USING_RIGHT){
             renderer().setRenderable(runRight);
         }
-        this.WHICH_LEG_TO_USE++;
-        if(this.WHICH_LEG_TO_USE > USING_RIGHT){
-            this.WHICH_LEG_TO_USE = USING_SEMI_LEFT;
+        this.whichLegToUse++;
+        if(this.whichLegToUse > USING_RIGHT){
+            this.whichLegToUse = USING_SEMI_LEFT;
         }
         renderer().setIsFlippedHorizontally(!(getVelocity().x() > 0));
     }
@@ -196,6 +198,12 @@ public class Avatar extends GameObject {
         super.onCollisionEnter(other, collision);
         inTheAir = false;
         flying = false;
+        if(other instanceof Turtle && collision.getNormal().y() < 0){
+            scoreCounter.increaseBy(POINTS_FOR_HIT);
+            yMovementDir = Vector2.UP;
+            inTheAir = true;
+            transform().setVelocityY(yMovementDir.y()*JUMP_SPEED);
+        }
     }
 
     /**

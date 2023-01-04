@@ -7,24 +7,23 @@ import danogl.util.Vector2;
 import pepse.world.Block;
 import pepse.world.GroundHeightCalculator;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class Turtles {
 
     private static final String RUNNING_LEFT_IMAGE_LOCATION = "assets/turtle-left-foot.png";
     private static final String RUNNING_RIGHT_IMAGE_LOCATION = "assets/turtle-right-foot.png";
-    private static final int CREATE_TURTLE = 1;
-    private static final int SIZE_OF_TURTLE = 50;
+    private static final int CREATE_TURTLE = 10;
+    private static final int SIZE_OF_TURTLE = 70;
+    private static final int MIN_DIST_BETWEEN_TURTLES = 150;
     private final int randomRange;
     private final HashSet<Turtle> setOfTurtles;
     private final GroundHeightCalculator heightFunc;
     private final GameObjectCollection gameObjects;
     private final int turtleLayer;
-    private final int seed;
     private final Renderable leftSideRun;
     private final Renderable rightSideRun;
+    private final Random rand;
 
 
     /**
@@ -37,13 +36,13 @@ public class Turtles {
      */
     public Turtles(int randomRange, GroundHeightCalculator heightFunc,
                    GameObjectCollection gameObjects, int turtleLayer,
-                   ImageReader imageReader, int seed){
+                   ImageReader imageReader){
         this.gameObjects = gameObjects;
         this.turtleLayer = turtleLayer;
-        this.seed = seed;
         setOfTurtles = new HashSet<>();
         this.randomRange = randomRange;
         this.heightFunc = heightFunc;
+        this.rand = new Random();
         this.leftSideRun = imageReader.readImage(RUNNING_LEFT_IMAGE_LOCATION,true);
         this.rightSideRun = imageReader.readImage(RUNNING_RIGHT_IMAGE_LOCATION,true);
     }
@@ -57,8 +56,7 @@ public class Turtles {
         int newMin = (int) Math.ceil((double) minX / Block.SIZE) * Block.SIZE;
         int newMax = (int) (Math.floor((double)maxX / Block.SIZE) * Block.SIZE);
         for (int x = newMin; x <= newMax; x ++) {
-            Random rand = new Random(Objects.hash(x, seed));
-            float toCreateATurtle = rand.nextInt(randomRange);
+            int toCreateATurtle = rand.nextInt(randomRange);
             if(toCreateATurtle == CREATE_TURTLE){
                 int y = (int) ((Math.floor(heightFunc.GroundHeightAt(x) / Block.SIZE)
                         * Block.SIZE) - SIZE_OF_TURTLE);
@@ -66,6 +64,7 @@ public class Turtles {
                         leftSideRun, rightSideRun);
                 gameObjects.addGameObject(turtle, turtleLayer);
                 setOfTurtles.add(turtle);
+                x += MIN_DIST_BETWEEN_TURTLES;
             }
         }
     }
@@ -76,11 +75,15 @@ public class Turtles {
      * @param maxX integer represents the ending point
      */
     public void removeInRange(int minX, int maxX){
+        ArrayList<Turtle> turtles = new ArrayList<>();
         for (Turtle turtle: setOfTurtles) {
             if(turtle.getCenter().x() >= minX && turtle.getCenter().x() <= maxX){
                 gameObjects.removeGameObject(turtle, turtleLayer);
-                setOfTurtles.remove(turtle); //TODO: could be a problem - talk to omer
+                turtles.add(turtle);
             }
+        }
+        for(Turtle turtle: turtles){
+            setOfTurtles.remove(turtle);
         }
     }
 }

@@ -12,23 +12,26 @@ import java.awt.*;
 import java.util.*;
 
 public class Tree {
+
     private static final int PLANT = 1;
     private static final String TRUNK_TAG = "trunk";
     private static final int MIN_TREE_HEIGHT = 5;
     private static final String LEAF_TAG = "leaf";
     private static final int MAX_NUM_OF_LEAVES_IN_ROW = 7;
+    private static final Color TREE_COLOR =new Color(100, 50, 20);
+    private static final int TREE_SIZE = 10;
+    private static final int RANDOM_RANGE = 10;
+    private static final int MIN_SPACE_BETWEEN_TREES = 2*Block.SIZE;
+
     private final GameObjectCollection gameObjects;
     private final int rootLayer;
     private final int leafLayer;
     private final int seed;
     private final GroundHeightCalculator HeightFunc;
     private final NoiseGenerator noiseGenerator;
-    private static final int TREE_SIZE = 10;
-    private static final int RANDOM_RANGE = 10;
-    private static final Color TREE_COLOR =new Color(100, 50, 20);
     private final HashMap<Integer, HashSet<Block>> truckMap;
     private final HashMap<Integer, HashSet<Leaf>> leafMap;
-    private static final int MIN_SPACE_BETWEEN_TREES = 2*Block.SIZE;
+
 
     /**
      * constructor for the Tree class.
