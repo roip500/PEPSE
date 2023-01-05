@@ -67,7 +67,7 @@ public class Turtles {
                 x += MIN_DIST_BETWEEN_TURTLES;
             }
         }
-    }
+    } //TODO: they can collide with tree in the creation
 
     /**
      * removes all the Turtles in the space between minX to maxX
@@ -85,5 +85,5 @@ public class Turtles {
         for(Turtle turtle: turtles){
             setOfTurtles.remove(turtle);
         }
-    }
+    } //TODO: not always removed and then they get stuck in the ground
 }

@@ -42,7 +42,7 @@ public class PepseGameManager extends GameManager{
     private static final int SIZE_OF_TXT = 30;
     private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
-    private static final int RANGE_FOR_TURTLE_CREATION = 1000;
+    private static final int RANGE_FOR_TURTLE_CREATION = 200;
 
     //classes arguments:
     private Tree tree;
