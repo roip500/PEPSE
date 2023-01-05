@@ -15,7 +15,7 @@ public class Turtles {
     private static final String RUNNING_RIGHT_IMAGE_LOCATION = "assets/turtle-right-foot.png";
     private static final int CREATE_TURTLE = 10;
     private static final int SIZE_OF_TURTLE = 70;
-    private static final int MIN_DIST_BETWEEN_TURTLES = 150;
+    private static final int MIN_DIST_BETWEEN_TURTLES = 300;
     private final int randomRange;
     private final HashSet<Turtle> setOfTurtles;
     private final GroundHeightCalculator heightFunc;
@@ -61,7 +61,7 @@ public class Turtles {
                 int y = (int) ((Math.floor(heightFunc.GroundHeightAt(x) / Block.SIZE)
                         * Block.SIZE) - SIZE_OF_TURTLE);
                 Turtle turtle = new Turtle(new Vector2(x, y), new Vector2(SIZE_OF_TURTLE, SIZE_OF_TURTLE),
-                        leftSideRun, rightSideRun);
+                        leftSideRun, rightSideRun, gameObjects, turtleLayer);
                 gameObjects.addGameObject(turtle, turtleLayer);
                 setOfTurtles.add(turtle);
                 x += MIN_DIST_BETWEEN_TURTLES;

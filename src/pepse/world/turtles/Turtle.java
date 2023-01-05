@@ -2,6 +2,7 @@ package pepse.world.turtles;
 
 import danogl.GameObject;
 import danogl.collisions.Collision;
+import danogl.collisions.GameObjectCollection;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
@@ -17,12 +18,14 @@ public class Turtle extends GameObject {
     private static final int WALKING_SPEED = 300;
     private static final int CHANCE_TO_JUMP = 10;
     private static final int TRANSITION_CYCLE = 30;
+    private static final float FADE_OUT_TIME = 0.5f;
 
-    private static final int FADE_IN_TIME = 5;
     private final Renderable leftSideRun;
     private final Renderable rightSideRun;
     private int whichLegToUse;
     Vector2 yMovementDir;
+    private GameObjectCollection gameObjects;
+    private int turtleLayer;
 
 
     /**
@@ -34,8 +37,12 @@ public class Turtle extends GameObject {
      * @param leftSideRun   the image of the turtle running with left food front
      * @param rightSideRun  the image of the turtle running with rihgt food front
      */
-    public Turtle(Vector2 topLeftCorner, Vector2 dimensions, Renderable leftSideRun, Renderable rightSideRun) {
+    public Turtle(Vector2 topLeftCorner, Vector2 dimensions, Renderable leftSideRun,
+                  Renderable rightSideRun, GameObjectCollection gameObjects, int turtleLayer) {
         super(topLeftCorner, dimensions, leftSideRun);
+        this.gameObjects = gameObjects;
+        this.turtleLayer = turtleLayer;
+        physics().preventIntersectionsFromDirection(Vector2.ZERO);
         this.rightSideRun = rightSideRun;
         this.leftSideRun = leftSideRun;
         yMovementDir = Vector2.ZERO;
@@ -68,8 +75,7 @@ public class Turtle extends GameObject {
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         if(other instanceof Avatar){
-            this.renderer().fadeIn(FADE_IN_TIME, null);
+            this.renderer().fadeOut(FADE_OUT_TIME, ()->gameObjects.removeGameObject(this, turtleLayer));
         }
-
     }
 }
