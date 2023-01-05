@@ -6,6 +6,8 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.world.Block;
 import pepse.world.GroundHeightCalculator;
+import pepse.world.TreeChecker;
+import pepse.world.WorldEdges;
 
 import java.util.*;
 
@@ -21,6 +23,8 @@ public class Turtles {
     private final GroundHeightCalculator heightFunc;
     private final GameObjectCollection gameObjects;
     private final int turtleLayer;
+    private final TreeChecker treeChecker;
+    private final WorldEdges worldEdges;
     private final Renderable leftSideRun;
     private final Renderable rightSideRun;
     private final Random rand;
@@ -36,9 +40,11 @@ public class Turtles {
      */
     public Turtles(int randomRange, GroundHeightCalculator heightFunc,
                    GameObjectCollection gameObjects, int turtleLayer,
-                   ImageReader imageReader){
+                   ImageReader imageReader, TreeChecker treeChecker, WorldEdges worldEdges){
         this.gameObjects = gameObjects;
         this.turtleLayer = turtleLayer;
+        this.treeChecker = treeChecker;
+        this.worldEdges = worldEdges;
         setOfTurtles = new HashSet<>();
         this.randomRange = randomRange;
         this.heightFunc = heightFunc;
@@ -56,18 +62,17 @@ public class Turtles {
         int newMin = (int) Math.ceil((double) minX / Block.SIZE) * Block.SIZE;
         int newMax = (int) (Math.floor((double)maxX / Block.SIZE) * Block.SIZE);
         for (int x = newMin; x <= newMax; x ++) {
-            int toCreateATurtle = rand.nextInt(randomRange);
-            if(toCreateATurtle == CREATE_TURTLE){
+            if(rand.nextInt(randomRange) == CREATE_TURTLE && !treeChecker.isThereATreeHere(x)){
                 int y = (int) ((Math.floor(heightFunc.GroundHeightAt(x) / Block.SIZE)
                         * Block.SIZE) - SIZE_OF_TURTLE);
                 Turtle turtle = new Turtle(new Vector2(x, y), new Vector2(SIZE_OF_TURTLE, SIZE_OF_TURTLE),
-                        leftSideRun, rightSideRun, gameObjects, turtleLayer);
+                        leftSideRun, rightSideRun, gameObjects, turtleLayer, worldEdges);
                 gameObjects.addGameObject(turtle, turtleLayer);
                 setOfTurtles.add(turtle);
                 x += MIN_DIST_BETWEEN_TURTLES;
             }
         }
-    } //TODO: they can collide with tree in the creation
+    }
 
     /**
      * removes all the Turtles in the space between minX to maxX

@@ -7,11 +7,12 @@ import pepse.util.ColorSupplier;
 import pepse.util.NoiseGenerator;
 import pepse.world.Block;
 import pepse.world.GroundHeightCalculator;
+import pepse.world.TreeChecker;
 
 import java.awt.*;
 import java.util.*;
 
-public class Tree {
+public class Tree implements TreeChecker {
 
     private static final int PLANT = 1;
     private static final String TRUNK_TAG = "trunk";
@@ -29,7 +30,7 @@ public class Tree {
     private final int seed;
     private final GroundHeightCalculator HeightFunc;
     private final NoiseGenerator noiseGenerator;
-    private final HashMap<Integer, HashSet<Block>> truckMap;
+    private final HashMap<Integer, HashSet<Block>> trunkMap;
     private final HashMap<Integer, HashSet<Leaf>> leafMap;
 
 
@@ -50,7 +51,7 @@ public class Tree {
         this.seed = seed;
         this.HeightFunc = HeightFunc;
         noiseGenerator = new NoiseGenerator(seed);
-        truckMap = new HashMap<>();
+        trunkMap = new HashMap<>();
         leafMap = new HashMap<>();
     }
 
@@ -81,7 +82,7 @@ public class Tree {
     private void buildTree(int yCord, int xCord) {
 
         //check tree doesn't exist in location:
-        if(truckMap.containsKey(xCord)){
+        if(trunkMap.containsKey(xCord)){
             return;
         }
 
@@ -95,7 +96,7 @@ public class Tree {
             gameObjects.addGameObject(curBlock, rootLayer);
             truckSet.add(curBlock);
         }
-        truckMap.put(xCord, truckSet);
+        trunkMap.put(xCord, truckSet);
 
         //create leafs:
         HashSet<Leaf> leafSet = new HashSet<>();
@@ -120,17 +121,29 @@ public class Tree {
      */
     public void removeInRange(int minX, int maxX){
         for(int i = minX; i<=maxX; i++){
-            if(truckMap.containsKey(i)){
-                for (Block block: truckMap.get(i)) {
+            if(trunkMap.containsKey(i)){
+                for (Block block: trunkMap.get(i)) {
                     gameObjects.removeGameObject(block, rootLayer);
                 }
                 for (Leaf leaf:leafMap.get(i)) {
                     leaf.removeTransitions();
                     gameObjects.removeGameObject(leaf, leafLayer);
                 }
-                truckMap.remove(i);
+                trunkMap.remove(i);
                 leafMap.remove(i);
             }
         }
+    }
+
+
+
+    /**
+     * returns true if there is a tree in the location given
+     * @param x - x coordination of the location to check
+     * @return true is yes, false if no
+     */
+    @Override
+    public boolean isThereATreeHere(int x){
+        return trunkMap.containsKey(x);
     }
 }

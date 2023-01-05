@@ -6,7 +6,8 @@ import danogl.collisions.GameObjectCollection;
 import danogl.components.Transition;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import pepse.world.Avatar;
+import pepse.world.WorldEdges;
+
 import java.util.Random;
 
 
@@ -22,9 +23,12 @@ public class Turtle extends GameObject {
     private static final float FADE_OUT_TIME = 0.5f;
     private static final int PERCENT_FOR_JUMP = 50;
     private static final int INTEGER_REP_JUMP = 1;
+    private static final String TURTLE_TAG = "turtle";
+    private static final String AVATAR_TAG = "avatar";
 
     private final GameObjectCollection gameObjects;
     private final int turtleLayer;
+    private final WorldEdges worldEdges;
     private final Random rand;
     private final Renderable leftSideRun;
     private final Renderable rightSideRun;
@@ -44,10 +48,12 @@ public class Turtle extends GameObject {
      * @param rightSideRun  the image of the turtle running with right food front
      */
     public Turtle(Vector2 topLeftCorner, Vector2 dimensions, Renderable leftSideRun,
-                  Renderable rightSideRun, GameObjectCollection gameObjects, int turtleLayer) {
+                  Renderable rightSideRun, GameObjectCollection gameObjects,
+                  int turtleLayer, WorldEdges worldEdges) {
         super(topLeftCorner, dimensions, leftSideRun);
         this.gameObjects = gameObjects;
         this.turtleLayer = turtleLayer;
+        this.worldEdges = worldEdges;
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         this.rightSideRun = rightSideRun;
         this.leftSideRun = leftSideRun;
@@ -56,6 +62,7 @@ public class Turtle extends GameObject {
         whichLegToUse = USING_LEFT;
         rand = new Random();
         inTheAir = false;
+        this.setTag(TURTLE_TAG);
         new Transition<>(this,
                 aFloat->transform().setVelocityX(xMovementDir.x()*WALKING_SPEED),
                 0f, 1f,
@@ -79,6 +86,20 @@ public class Turtle extends GameObject {
         super.update(deltaTime);
         setVelocityY();
         setImage();
+        setMovementX();
+    }
+
+    /**
+     * makes sure the turtle doesn't fall off the world
+     */
+    private void setMovementX() {
+        if(this.getCenter().x() == worldEdges.getWorldsLeftEdge()){
+            xMovementDir = Vector2.RIGHT;
+        }
+        if(this.getCenter().x() == worldEdges.getWorldsRightEdge()){
+            xMovementDir = Vector2.LEFT;
+        }
+
     }
 
     /**
@@ -119,14 +140,14 @@ public class Turtle extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if(other instanceof Avatar){
+        if(other.getTag().equals(AVATAR_TAG)){
             this.renderer().fadeOut(FADE_OUT_TIME, ()->gameObjects.removeGameObject(this, turtleLayer));
         }
-        if(collision.getNormal().y() > 0){
-            xMovementDir =  new Vector2(xMovementDir.x()*(-1),0);
-        }
-        else{
+        if(collision.getNormal().y() < 0){
             inTheAir = false;
+        }
+        if(collision.getNormal().x() !=0){
+            xMovementDir =  new Vector2(xMovementDir.x()*(-1),0);
         }
     }
 }

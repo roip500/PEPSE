@@ -8,7 +8,6 @@ import danogl.gui.UserInputListener;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Counter;
 import danogl.util.Vector2;
-import pepse.world.turtles.Turtle;
 
 import java.awt.event.KeyEvent;
 
@@ -35,6 +34,9 @@ public class Avatar extends GameObject {
     private static final int WALKING_SPEED = 300;
     private static final int AVATAR_SIZE = 60;
     private static final int POINTS_FOR_HIT = 5;
+    private static final String AVATAR_TAG = "avatar";
+    private static final String TURTLE_TAG = "turtle";
+
 
     // parameters to be used:
     private final int maxEnergy;
@@ -89,6 +91,7 @@ public class Avatar extends GameObject {
         this.whichLegToUse = USING_SEMI_LEFT;
         this.energyCounter = energyCounter;
         this.scoreCounter = scoreCounter;
+        this.setTag(AVATAR_TAG);
     }
 
     /**
@@ -198,7 +201,7 @@ public class Avatar extends GameObject {
         super.onCollisionEnter(other, collision);
         inTheAir = false;
         flying = false;
-        if(other instanceof Turtle && collision.getNormal().y() < 0){
+        if(other.getTag().equals(TURTLE_TAG) && collision.getNormal().y() < 0){
             scoreCounter.increaseBy(POINTS_FOR_HIT);
             yMovementDir = Vector2.UP;
             inTheAir = true;
