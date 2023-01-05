@@ -101,13 +101,7 @@ public class Tree {
         HashSet<Leaf> leafSet = new HashSet<>();
         int leafRange = Math.min(MAX_NUM_OF_LEAVES_IN_ROW, treeHeight - 2);
         int y = yCord - ((treeHeight + leafRange/2) * Block.SIZE);
-        int x;
-        if(leafRange % 2  == 1){   // centering the leafs around the trunk:
-            x = xCord - (leafRange/2 * Block.SIZE);
-        }
-        else{
-            x = xCord - ((leafRange/2) * Block.SIZE - Block.SIZE/2);
-        }
+        int x = xCord - (leafRange/2 * Block.SIZE) + (1 - leafRange % 2) * Block.SIZE/2;
         for(int i = 0; i < leafRange * Block.SIZE; i += Block.SIZE ){
             for(int j = 0;  j < leafRange * Block.SIZE; j += Block.SIZE){
                 Leaf leaf = new Leaf(new Vector2(x + j, y + i));
