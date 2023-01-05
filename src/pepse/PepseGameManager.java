@@ -51,6 +51,11 @@ public class PepseGameManager extends GameManager{
     private GameObject avatar;
     private Turtles turtlesMain;
     private WorldEdges worldEdges;
+    private WindowController windowController;
+    private ImageReader imageReader;
+    private Counter energyCounter;
+    private Counter scoreCounter;
+    private UserInputListener inputListener;
 
     /**
      * function sets the games collisions
@@ -83,6 +88,88 @@ public class PepseGameManager extends GameManager{
     }
 
     /**
+     * creates the sun and it's halo
+     */
+    private void createSunAndHalo(){
+        GameObject sun = Sun.create(gameObjects(),windowController.getWindowDimensions(),
+                SUN_AND_MOON_LAYER, CYCLE_LENGTH);
+        SunHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, sun, SUN_HALO_COLOR);
+    }
+
+    /**
+     * creates moon adn it's halo and night effect
+     */
+    private void createMoonAndNight(){
+        GameObject moon = Moon.create(gameObjects(),windowController.getWindowDimensions(),
+                SUN_AND_MOON_LAYER, CYCLE_LENGTH, imageReader);
+        MoonHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
+        Night.create(gameObjects(), windowController.getWindowDimensions(),
+                NIGHT_LAYER, CYCLE_LENGTH/2f);
+    }
+
+    /**
+     * creates the terrain
+     */
+    private void createTerrain(){
+        terrain = new Terrain(gameObjects(), GROUND_LAYER, EXTRA_GROUND_LAYER,
+                windowController.getWindowDimensions(),SEED);
+        terrain.createInRange(worldEdges.getWorldsLeftEdge(), worldEdges.getWorldsRightEdge());
+    }
+
+    /**
+     * creates the trees
+     */
+    private void createTrees(){
+        tree = new Tree(gameObjects(),TREE_TRUNK_LAYER, LEAF_LAYER, SEED, terrain);
+        tree.createInRange(worldEdges.getWorldsLeftEdge(), (int) sizeOfWindowX/2-3*Block.SIZE);
+        tree.createInRange((int) sizeOfWindowX/2+3*Block.SIZE, worldEdges.getWorldsRightEdge());
+    }
+
+    /**
+     * creates the energy counter and the score counter and adds them to the screen
+     */
+    private void createCounters(){
+        energyCounter = new Counter(AVATARS_ENERGY);
+        GraphicCounter energyCounterObject = new GraphicCounter(energyCounter, Vector2.ZERO,
+                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_ENERGY);
+        gameObjects().addGameObject(energyCounterObject, Layer.UI);
+        scoreCounter = new Counter(0);
+        GraphicCounter scoreCounterObject = new GraphicCounter(scoreCounter,
+                new Vector2(sizeOfWindowX - SIZE_OF_TXT*6, 0),
+                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
+        gameObjects().addGameObject(scoreCounterObject, Layer.UI);
+    }
+
+    /**
+     * creates the turtles
+     */
+    private void createTurtles(){
+        turtlesMain = new Turtles(RANGE_FOR_TURTLE_CREATION, terrain, gameObjects(), TURTLE_LAYER,
+                imageReader, tree, worldEdges);
+        turtlesMain.createInRange(worldEdges.getWorldsLeftEdge(), (int) sizeOfWindowX/2-3*Block.SIZE);
+    }
+
+    /**
+     * creates the avatar
+     */
+    private void createAvatar(){
+        float x = windowController.getWindowDimensions().x()/2;
+        float y = windowController.getWindowDimensions().y()/2;
+        avatar = Avatar.create(gameObjects(), AVATAR_LAYER, new Vector2(x, y),
+                inputListener, imageReader, energyCounter, scoreCounter);
+    }
+
+    /**
+     * this function sets the camera to follow the player and creates the illusion of an infinite world
+     */
+    private void infiniteWordHandler(){
+        setCamera(new Camera(avatar, Vector2.ZERO,
+                windowController.getWindowDimensions(),
+                windowController.getWindowDimensions()));
+        windowController.getWindowDimensions().mult(0.5f);
+    }
+
+    /**
      * initializes the game
      * @param imageReader Contains a single method: readImage, which reads an image from disk.
      *                 See its documentation for help.
@@ -104,63 +191,29 @@ public class PepseGameManager extends GameManager{
         //arguments:
         sizeOfWindowX = windowController.getWindowDimensions().x();
         worldEdges = new WorldEdges(-DIST_TO_ADD, (int) (sizeOfWindowX + DIST_TO_ADD));
+        this.windowController = windowController;
+        this.imageReader = imageReader;
+        this.inputListener = inputListener;
 
         // create the sky:
         Sky.create(gameObjects(), windowController.getWindowDimensions(), SKY_LAYER);
+        createSunAndHalo();
 
-        // create the sun and the halo:
-        GameObject sun = Sun.create(gameObjects(),windowController.getWindowDimensions(),
-                SUN_AND_MOON_LAYER, CYCLE_LENGTH);
-        SunHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, sun, SUN_HALO_COLOR);
+        createMoonAndNight();
 
-        // create the moon and the night effect:
-        GameObject moon = Moon.create(gameObjects(),windowController.getWindowDimensions(),
-                SUN_AND_MOON_LAYER, CYCLE_LENGTH, imageReader);
-        MoonHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
-        Night.create(gameObjects(), windowController.getWindowDimensions(),
-                NIGHT_LAYER, CYCLE_LENGTH/2f);
+        createTerrain();
 
-        // create terrain:
-        terrain = new Terrain(gameObjects(), GROUND_LAYER, EXTRA_GROUND_LAYER,
-                windowController.getWindowDimensions(),SEED);
-        terrain.createInRange(worldEdges.getWorldsLeftEdge(), worldEdges.getWorldsRightEdge());
+        createTrees();
 
-        //create trees:
-        tree = new Tree(gameObjects(),TREE_TRUNK_LAYER, LEAF_LAYER, SEED, terrain);
-        tree.createInRange(worldEdges.getWorldsLeftEdge(), (int) sizeOfWindowX/2-3*Block.SIZE);
-        tree.createInRange((int) sizeOfWindowX/2+3*Block.SIZE, worldEdges.getWorldsRightEdge());
+        createCounters();
 
-        //create counters:
-        Counter energyCounter = new Counter(AVATARS_ENERGY);
-        GraphicCounter energyCounterObject = new GraphicCounter(energyCounter, Vector2.ZERO,
-                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_ENERGY);
-        gameObjects().addGameObject(energyCounterObject, Layer.UI);
-        Counter scoreCounter = new Counter(0);
-        GraphicCounter scoreCounterObject = new GraphicCounter(scoreCounter,
-                new Vector2(sizeOfWindowX - SIZE_OF_TXT*6, 0),
-                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
-        gameObjects().addGameObject(scoreCounterObject, Layer.UI);
+        createTurtles();
 
-        //create turtles:
-        turtlesMain = new Turtles(RANGE_FOR_TURTLE_CREATION, terrain, gameObjects(), TURTLE_LAYER,
-                imageReader, tree, worldEdges);
-        turtlesMain.createInRange(worldEdges.getWorldsLeftEdge(), (int) sizeOfWindowX/2-3*Block.SIZE);
+        createAvatar();
 
-        // create avatar:
-        float x = windowController.getWindowDimensions().x()/2;
-        float y = windowController.getWindowDimensions().y()/2;
-        avatar = Avatar.create(gameObjects(), AVATAR_LAYER, new Vector2(x, y),
-                inputListener, imageReader, energyCounter, scoreCounter);
-
-        // set collision:
         setCollides();
 
-        // infinite world:
-        setCamera(new Camera(avatar, Vector2.ZERO,
-                windowController.getWindowDimensions(),
-                windowController.getWindowDimensions()));
-        windowController.getWindowDimensions().mult(0.5f);
-
+        infiniteWordHandler();
     }
 
     /**
@@ -178,25 +231,26 @@ public class PepseGameManager extends GameManager{
         int worldsLeftEdge = worldEdges.getWorldsLeftEdge();
         int worldsRightEdge = worldEdges.getWorldsRightEdge();
         if(avatar.getCenter().x() < worldsLeftEdge + sizeOfWindowX/2){
-            tree.removeInRange((int) (worldsRightEdge- DIST_TO_ADD), (int) (worldsRightEdge));
-            terrain.removeInRange((int) (worldsRightEdge- DIST_TO_ADD), (int) (worldsRightEdge));
-            turtlesMain.removeInRange((int) (worldsRightEdge- DIST_TO_ADD), (int) (worldsRightEdge));
+            tree.removeInRange((worldsRightEdge- DIST_TO_ADD),  (worldsRightEdge));
+            terrain.removeInRange(worldsRightEdge- DIST_TO_ADD, worldsRightEdge);
+            turtlesMain.removeInRange(worldsRightEdge- DIST_TO_ADD, worldsRightEdge);
             worldEdges.setWorldsRightEdge(worldsRightEdge-DIST_TO_ADD);
-            tree.createInRange((int) (worldsLeftEdge - DIST_TO_ADD), (int) (worldsLeftEdge));
-            terrain.createInRange((int) (worldsLeftEdge - DIST_TO_ADD), (int) (worldsLeftEdge));
-            turtlesMain.createInRange((int) (worldsLeftEdge - DIST_TO_ADD), (int) (worldsLeftEdge));
-            worldEdges.setWorldsRightEdge(worldsRightEdge-DIST_TO_ADD);
+            tree.createInRange(worldsLeftEdge - DIST_TO_ADD, worldsLeftEdge);
+            terrain.createInRange(worldsLeftEdge - DIST_TO_ADD, worldsLeftEdge);
+            turtlesMain.createInRange(worldsLeftEdge - DIST_TO_ADD, worldsLeftEdge);
+            worldEdges.setWorldsLeftEdge(worldsLeftEdge-DIST_TO_ADD);
         }
         else if(avatar.getCenter().x() > worldsRightEdge - sizeOfWindowX/2){
-            tree.removeInRange((int) (worldsLeftEdge), (int) (worldsLeftEdge + DIST_TO_ADD));
-            terrain.removeInRange((int) (worldsLeftEdge), (int) (worldsLeftEdge + DIST_TO_ADD));
-            turtlesMain.removeInRange((int) (worldsLeftEdge), (int) (worldsLeftEdge + DIST_TO_ADD));
-            worldEdges.setWorldsRightEdge(worldsRightEdge + DIST_TO_ADD);
-            tree.createInRange((int) (worldsRightEdge), (int) (worldsRightEdge + DIST_TO_ADD));
-            terrain.createInRange((int) (worldsRightEdge), (int) (worldsRightEdge + DIST_TO_ADD));
-            turtlesMain.createInRange((int) (worldsRightEdge), (int) (worldsRightEdge + DIST_TO_ADD));
+            tree.removeInRange(worldsLeftEdge, worldsLeftEdge + DIST_TO_ADD);
+            terrain.removeInRange(worldsLeftEdge, worldsLeftEdge + DIST_TO_ADD);
+            turtlesMain.removeInRange(worldsLeftEdge, worldsLeftEdge + DIST_TO_ADD);
+            worldEdges.setWorldsLeftEdge(worldsLeftEdge + DIST_TO_ADD);
+            tree.createInRange(worldsRightEdge, worldsRightEdge + DIST_TO_ADD);
+            terrain.createInRange(worldsRightEdge, worldsRightEdge + DIST_TO_ADD);
+            turtlesMain.createInRange(worldsRightEdge, worldsRightEdge + DIST_TO_ADD);
             worldEdges.setWorldsRightEdge(worldsRightEdge + DIST_TO_ADD);
         }
+        //TODO: there are still turtles inside the ground
     }
 
     /**
