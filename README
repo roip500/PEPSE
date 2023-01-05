@@ -3,7 +3,7 @@ omer.benmoshe
 
 
 1) The deference's between the UML:
-a - We added a interface to the pepse package. at first we didn't know how to send a function
+a - We added interface's to the pepse package. at first we didn't know how to send a function
     from one class to another so we didn't anticipate that we had to create a interface. But after
     research and revising the course we realized that its important for the game.
 b - In the tree package we were not sure at first how we would implement the leafs, so we only had one
@@ -12,6 +12,11 @@ c - We added to the daynight package a moon and a moon halo as part of our bonus
 d - The removeInRange functions in Tree and Terrain were added as part creating the infinite world.
     We didn't realize how this effect will be implemented so we couldn't has predicted these functions
     prior.
+e - We added a new class called WorldEdge which was used to keep the turtle in the game when letting
+    them move around.
+f - Adding a new package called turtles that holds the classed Turtles (=in charge of creating the
+    turtles and removing them) and the class Turtle(=the game object called turtle in charge of all
+    the turtles behaviors).
 
 
 2) How we made our world infinite:
@@ -53,6 +58,16 @@ c - We wanted to use a Counter object for the avatars energy but we were instruc
     by 0.5 each round and the counter object only takes integers not floats. We fixed this problem by
     increasing the max energy from 100 to 200 and the changing number from 0.5 to 1 and that way we still keep
     the same ratio but can now use the Counter object.
+d - We created a turtle that will move, jump, and when collided with the avatar, the avatar will get points
+    and the turtle will be removed from the screen. the problem was not creating the turtles in the same
+    coordinates as a tree, which shouldn't be possible, and adding them to the infinite world. The first problem
+    we fixed by creating a new function in tree which will return true if a tree exists in the coordinate x.
+    By using Function Interface we sent the function to the class Turtles (in charge of creating the turtles
+    and removing them) and setting that only if the function returns false then it can create a turtle in that
+    coordinate. The second problem we fixed by creating a new class called WorldEdges that holds 2 integers -
+    the coordinate x of the left edge and the coordinate x of the right edge. We update this class every update
+    of PepseGameManager. By sending this class to the Turtle class, we make sure that if the turtle reaches an edge
+    it will turn around.
 
 
 5) Bonuses we implemented:

@@ -6,6 +6,7 @@ import danogl.collisions.GameObjectCollection;
 import danogl.components.Transition;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import pepse.world.GroundHeightCalculator;
 import pepse.world.WorldEdges;
 
 import java.util.Random;
@@ -29,6 +30,7 @@ public class Turtle extends GameObject {
     private final GameObjectCollection gameObjects;
     private final int turtleLayer;
     private final WorldEdges worldEdges;
+    private GroundHeightCalculator heightFunc;
     private final Random rand;
     private final Renderable leftSideRun;
     private final Renderable rightSideRun;
@@ -49,11 +51,12 @@ public class Turtle extends GameObject {
      */
     public Turtle(Vector2 topLeftCorner, Vector2 dimensions, Renderable leftSideRun,
                   Renderable rightSideRun, GameObjectCollection gameObjects,
-                  int turtleLayer, WorldEdges worldEdges) {
+                  int turtleLayer, WorldEdges worldEdges, GroundHeightCalculator heightFunc) {
         super(topLeftCorner, dimensions, leftSideRun);
         this.gameObjects = gameObjects;
         this.turtleLayer = turtleLayer;
         this.worldEdges = worldEdges;
+        this.heightFunc = heightFunc;
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         this.rightSideRun = rightSideRun;
         this.leftSideRun = leftSideRun;
@@ -84,6 +87,9 @@ public class Turtle extends GameObject {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        if(this.getCenter().y() > heightFunc.GroundHeightAt(this.getCenter().x())){
+            gameObjects.removeGameObject(this, turtleLayer);
+        }
         setVelocityY();
         setImage();
         setMovementX();

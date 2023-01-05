@@ -66,7 +66,7 @@ public class Turtles {
                 int y = (int) ((Math.floor(heightFunc.GroundHeightAt(x) / Block.SIZE)
                         * Block.SIZE) - SIZE_OF_TURTLE);
                 Turtle turtle = new Turtle(new Vector2(x, y), new Vector2(SIZE_OF_TURTLE, SIZE_OF_TURTLE),
-                        leftSideRun, rightSideRun, gameObjects, turtleLayer, worldEdges);
+                        leftSideRun, rightSideRun, gameObjects, turtleLayer, worldEdges, heightFunc);
                 gameObjects.addGameObject(turtle, turtleLayer);
                 setOfTurtles.add(turtle);
                 x += MIN_DIST_BETWEEN_TURTLES;
@@ -90,5 +90,5 @@ public class Turtles {
         for(Turtle turtle: turtles){
             setOfTurtles.remove(turtle);
         }
-    } //TODO: not always removed and then they get stuck in the ground
+    }
 }
