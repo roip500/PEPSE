@@ -40,7 +40,7 @@ public class GraphicCounter extends GameObject {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        TextRenderable txt = new TextRenderable(textToPrint + Integer.toString(counter.value()));
+        TextRenderable txt = new TextRenderable(textToPrint + counter.value());
         txt.setColor(Color.black);
         this.renderer().setRenderable(txt);
     }

@@ -43,6 +43,7 @@ public class PepseGameManager extends GameManager{
     private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
     private static final int RANGE_FOR_TURTLE_CREATION = 200;
+    private static final int LENGTH_OF_TXT_FOR_SCORE = 7;
 
     //classes arguments:
     private Tree tree;
@@ -135,7 +136,7 @@ public class PepseGameManager extends GameManager{
         gameObjects().addGameObject(energyCounterObject, Layer.UI);
         scoreCounter = new Counter(0);
         GraphicCounter scoreCounterObject = new GraphicCounter(scoreCounter,
-                new Vector2(sizeOfWindowX - SIZE_OF_TXT*6, 0),
+                new Vector2(sizeOfWindowX - SIZE_OF_TXT*LENGTH_OF_TXT_FOR_SCORE, 0),
                 new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
         gameObjects().addGameObject(scoreCounterObject, Layer.UI);
     }

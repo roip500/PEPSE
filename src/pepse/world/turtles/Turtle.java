@@ -30,7 +30,7 @@ public class Turtle extends GameObject {
     private final GameObjectCollection gameObjects;
     private final int turtleLayer;
     private final WorldEdges worldEdges;
-    private GroundHeightCalculator heightFunc;
+    private final GroundHeightCalculator heightFunc;
     private final Random rand;
     private final Renderable leftSideRun;
     private final Renderable rightSideRun;
@@ -146,7 +146,7 @@ public class Turtle extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        if(other.getTag().equals(AVATAR_TAG)){
+        if(other.getTag().equals(AVATAR_TAG) && collision.getNormal().y() > 0){
             this.renderer().fadeOut(FADE_OUT_TIME, ()->gameObjects.removeGameObject(this, turtleLayer));
         }
         if(collision.getNormal().y() < 0){
