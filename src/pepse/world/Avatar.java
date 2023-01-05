@@ -3,6 +3,7 @@ package pepse.world;
 import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.Renderable;
@@ -36,12 +37,19 @@ public class Avatar extends GameObject {
     private static final int POINTS_FOR_HIT = 5;
     private static final String AVATAR_TAG = "avatar";
     private static final String TURTLE_TAG = "turtle";
+    private static Counter energyCounter;
+    private static Counter scoreCounter;
+    private static final String TXT_FOR_ENERGY = "ENERGY:";
+    private static final String TXT_FOR_SCORE = "SCORE:";
+    private static final int AVATARS_ENERGY = 200;
+    private static final int SIZE_OF_TXT = 30;
+    private static final int LENGTH_OF_TXT_FOR_SCORE = 8;
+    private static final int TXT_LOC_Y = SIZE_OF_TXT/2;
+    private static final int TXT_LOC_X = 1280 - SIZE_OF_TXT*LENGTH_OF_TXT_FOR_SCORE;
 
 
     // parameters to be used:
     private final int maxEnergy;
-    private final Counter energyCounter;
-    private final Counter scoreCounter;
     private final Renderable standing;
     private final Renderable flyingUp;
     private final Renderable flyingSides;
@@ -68,12 +76,10 @@ public class Avatar extends GameObject {
      * @param runLeft the image that will be used when the avatar walks - 1
      * @param runRight the image that will be used when the avatar walks - 2
      * @param energyCounter counter object that represents the energy the avatar has
-     * @param scoreCounter counter object that represents the score the avatar has
      */
     private Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener, Renderable flyingUp, Renderable flyingSides,
-                  Renderable runLeft, Renderable runRight, danogl.util.Counter energyCounter,
-                   danogl.util.Counter scoreCounter, Renderable semiRunLeft, Renderable semiRunRight) {
+                  Renderable runLeft, Renderable runRight, danogl.util.Counter energyCounter, Renderable semiRunLeft, Renderable semiRunRight) {
         super(topLeftCorner, dimensions, renderable);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         maxEnergy = energyCounter.value();
@@ -89,8 +95,6 @@ public class Avatar extends GameObject {
         this.semiRunLeft = semiRunLeft;
         this.semiRunRight = semiRunRight;
         this.whichLegToUse = USING_SEMI_LEFT;
-        this.energyCounter = energyCounter;
-        this.scoreCounter = scoreCounter;
         this.setTag(AVATAR_TAG);
     }
 
@@ -222,9 +226,7 @@ public class Avatar extends GameObject {
     public static Avatar create(GameObjectCollection gameObjects,
                                 int layer, Vector2 topLeftCorner,
                                 UserInputListener inputListener,
-                                ImageReader imageReader,
-                                danogl.util.Counter energyCounter,
-                                danogl.util.Counter scoreCounter){
+                                ImageReader imageReader){
         Renderable standingImg = imageReader.readImage(STANDING_IMAGE_LOCATION,true);
         Renderable flyingUpImg = imageReader.readImage(FLYING_UP_IMAGE_LOCATION,true);
         Renderable flyingSidesImg = imageReader.readImage(FLYING_SIDES_IMAGE_LOCATION,true);
@@ -232,11 +234,27 @@ public class Avatar extends GameObject {
         Renderable runRightImg = imageReader.readImage(RUN_RIGHT_IMAGE_LOCATION,true);
         Renderable semiRunLeftImg = imageReader.readImage(SEMI_RUN_LEFT_IMAGE_LOCATION,true);
         Renderable semiRunRightImg = imageReader.readImage(SEMI_RUN_RIGHT_IMAGE_LOCATION,true);
+        createCounters(gameObjects);
         Avatar avatar = new Avatar(Vector2.ZERO, new Vector2(AVATAR_SIZE, AVATAR_SIZE),
                 standingImg, inputListener, flyingUpImg, flyingSidesImg, runLeftImg,
-                runRightImg, energyCounter, scoreCounter, semiRunLeftImg, semiRunRightImg);
+                runRightImg, energyCounter, semiRunLeftImg, semiRunRightImg);
         avatar.setCenter(topLeftCorner);
         gameObjects.addGameObject(avatar, layer);
         return avatar;
+    }
+
+    /**
+     * creates the energy counter and the score counter and adds them to the screen
+     */
+    private static void createCounters(GameObjectCollection gameObjects){
+        energyCounter = new Counter(AVATARS_ENERGY);
+        GraphicCounter energyCounterObject = new GraphicCounter(energyCounter, new Vector2(0, TXT_LOC_Y),
+                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_ENERGY);
+        gameObjects.addGameObject(energyCounterObject, Layer.UI);
+        scoreCounter = new Counter(0);
+        GraphicCounter scoreCounterObject = new GraphicCounter(scoreCounter,
+                new Vector2(TXT_LOC_X, TXT_LOC_Y),
+                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
+        gameObjects.addGameObject(scoreCounterObject, Layer.UI);
     }
 }

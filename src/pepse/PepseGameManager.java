@@ -8,7 +8,6 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
-import danogl.util.Counter;
 import danogl.util.Vector2;
 import pepse.world.*;
 import pepse.world.daynight.*;
@@ -33,18 +32,12 @@ public class PepseGameManager extends GameManager{
     private static final int TURTLE_LAYER = Layer.DEFAULT;
 
     //const arguments:
-    private static final String TXT_FOR_ENERGY = "ENERGY:";
-    private static final String TXT_FOR_SCORE = "SCORE:";
     private static final int DIST_TO_ADD = Block.SIZE * 10;
     private static final int SEED = 417;
-    private static final int AVATARS_ENERGY = 200;
     private static final int CYCLE_LENGTH = 60;
-    private static final int SIZE_OF_TXT = 30;
     private static final Color SUN_HALO_COLOR = new Color(255, 255, 0, 20);
     private static final Color MOON_HALO_COLOR = new Color(255, 255, 255, 100);
     private static final int RANGE_FOR_TURTLE_CREATION = 200;
-    private static final int LENGTH_OF_TXT_FOR_SCORE = 8;
-    private static final int TXT_LOC_Y = SIZE_OF_TXT/2;
 
     //classes arguments:
     private Tree tree;
@@ -55,8 +48,6 @@ public class PepseGameManager extends GameManager{
     private WorldEdges worldEdges;
     private WindowController windowController;
     private ImageReader imageReader;
-    private Counter energyCounter;
-    private Counter scoreCounter;
     private UserInputListener inputListener;
 
     /**
@@ -113,8 +104,7 @@ public class PepseGameManager extends GameManager{
      * creates the terrain
      */
     private void createTerrain(){
-        terrain = new Terrain(gameObjects(), GROUND_LAYER, EXTRA_GROUND_LAYER,
-                windowController.getWindowDimensions(),SEED);
+        terrain = new Terrain(gameObjects() ,windowController.getWindowDimensions(),SEED);
         terrain.createInRange(worldEdges.getWorldsLeftEdge(), worldEdges.getWorldsRightEdge());
     }
 
@@ -127,20 +117,6 @@ public class PepseGameManager extends GameManager{
         tree.createInRange((int) sizeOfWindowX/2+3*Block.SIZE, worldEdges.getWorldsRightEdge());
     }
 
-    /**
-     * creates the energy counter and the score counter and adds them to the screen
-     */
-    private void createCounters(){
-        energyCounter = new Counter(AVATARS_ENERGY);
-        GraphicCounter energyCounterObject = new GraphicCounter(energyCounter, new Vector2(0, TXT_LOC_Y),
-                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_ENERGY);
-        gameObjects().addGameObject(energyCounterObject, Layer.UI);
-        scoreCounter = new Counter(0);
-        GraphicCounter scoreCounterObject = new GraphicCounter(scoreCounter,
-                new Vector2(sizeOfWindowX - SIZE_OF_TXT*LENGTH_OF_TXT_FOR_SCORE, TXT_LOC_Y),
-                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
-        gameObjects().addGameObject(scoreCounterObject, Layer.UI);
-    }
 
     /**
      * creates the turtles
@@ -158,7 +134,7 @@ public class PepseGameManager extends GameManager{
         float x = windowController.getWindowDimensions().x()/2;
         float y = windowController.getWindowDimensions().y()/2;
         avatar = Avatar.create(gameObjects(), AVATAR_LAYER, new Vector2(x, y),
-                inputListener, imageReader, energyCounter, scoreCounter);
+                inputListener, imageReader);
     }
 
     /**
@@ -207,8 +183,6 @@ public class PepseGameManager extends GameManager{
 
         createTrees();
 
-        createCounters();
-
         createTurtles();
 
         createAvatar();
@@ -252,7 +226,6 @@ public class PepseGameManager extends GameManager{
             turtlesMain.createInRange(worldsRightEdge, worldsRightEdge + DIST_TO_ADD);
             worldEdges.setWorldsRightEdge(worldsRightEdge + DIST_TO_ADD);
         }
-        //TODO: there are still turtles inside the ground
     }
 
     /**

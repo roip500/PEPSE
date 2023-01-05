@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import danogl.collisions.GameObjectCollection;
+import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
@@ -12,9 +13,10 @@ import pepse.util.NoiseGenerator;
 
 public class Terrain  implements GroundHeightCalculator{
     private static final int TWO_LAYERS = 2;
+    private static final int GROUND_LAYER = Layer.STATIC_OBJECTS;
+
+    private static final int EXTRA_GROUND_LAYER = Layer.STATIC_OBJECTS + 1;
     private final GameObjectCollection gameObjects;
-    private final int groundLayer;
-    private final int extraGroundLayer;
     private final Vector2 windowDimensions;
     private static final int TERRAIN_DEPTH = 20;
     public static final int NOISE_MULTIPLIER = 150;
@@ -30,15 +32,11 @@ public class Terrain  implements GroundHeightCalculator{
     /**
      * constructs the terrain of the game
      * @param gameObjects all the game objects of the game.
-     * @param groundLayer the layer which we add the ground blocks in to.
      * @param windowDimensions the size of the screen of the game.
      * @param seed the seed for the noise generator
      */
-    public Terrain(GameObjectCollection gameObjects, int groundLayer, int extraGroundLayer,
-                   Vector2 windowDimensions, int seed) {
+    public Terrain(GameObjectCollection gameObjects, Vector2 windowDimensions, int seed) {
         this.gameObjects = gameObjects;
-        this.groundLayer = groundLayer;
-        this.extraGroundLayer = extraGroundLayer;
         this.windowDimensions = windowDimensions;
         noiseGenerator= new NoiseGenerator(seed);
         activeBlocks = new HashMap<>();
@@ -83,10 +81,10 @@ public class Terrain  implements GroundHeightCalculator{
                     new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
             curBlock.setTag(GROUND_TAG);
             if(i < TWO_LAYERS){
-                gameObjects.addGameObject(curBlock, groundLayer);
+                gameObjects.addGameObject(curBlock, GROUND_LAYER);
             }
             else{
-                gameObjects.addGameObject(curBlock, extraGroundLayer);
+                gameObjects.addGameObject(curBlock, EXTRA_GROUND_LAYER);
             }
             curColumn.add(curBlock);
         }
@@ -114,8 +112,8 @@ public class Terrain  implements GroundHeightCalculator{
     private void deleteBlocks(int coordinate) {
         HashSet<Block> toDelete = activeBlocks.get(coordinate);
         for (Block curBlock : toDelete){
-            gameObjects.removeGameObject(curBlock, groundLayer);
-            gameObjects.removeGameObject(curBlock, extraGroundLayer);
+            gameObjects.removeGameObject(curBlock, GROUND_LAYER);
+            gameObjects.removeGameObject(curBlock, EXTRA_GROUND_LAYER);
         }
     }
 }
