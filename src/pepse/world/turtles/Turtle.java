@@ -3,9 +3,11 @@ package pepse.world.turtles;
 import danogl.GameObject;
 import danogl.collisions.Collision;
 import danogl.collisions.GameObjectCollection;
+import danogl.components.Transition;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
+import java.util.Random;
 
 
 public class Turtle extends GameObject {
@@ -16,16 +18,20 @@ public class Turtle extends GameObject {
     private static final int FALLING_MAX_SPEED = 400;
     private static final int GRAVITY_EFFECT= 10;
     private static final int WALKING_SPEED = 300;
-    private static final int CHANCE_TO_JUMP = 10;
-    private static final int TRANSITION_CYCLE = 30;
+    private static final int TRANSITION_CYCLE = 10;
     private static final float FADE_OUT_TIME = 0.5f;
+    private static final int PERCENT_FOR_JUMP = 50;
+    private static final int INTEGER_REP_JUMP = 1;
 
+    private final GameObjectCollection gameObjects;
+    private final int turtleLayer;
+    private final Random rand;
     private final Renderable leftSideRun;
     private final Renderable rightSideRun;
     private int whichLegToUse;
-    Vector2 yMovementDir;
-    private GameObjectCollection gameObjects;
-    private int turtleLayer;
+    private final Vector2 yMovementDir;
+    private Vector2 xMovementDir;
+    private boolean inTheAir;
 
 
     /**
@@ -35,7 +41,7 @@ public class Turtle extends GameObject {
      *                      Note that (0,0) is the top-left corner of the window.
      * @param dimensions    Width and height in window coordinates.
      * @param leftSideRun   the image of the turtle running with left food front
-     * @param rightSideRun  the image of the turtle running with rihgt food front
+     * @param rightSideRun  the image of the turtle running with right food front
      */
     public Turtle(Vector2 topLeftCorner, Vector2 dimensions, Renderable leftSideRun,
                   Renderable rightSideRun, GameObjectCollection gameObjects, int turtleLayer) {
@@ -45,12 +51,22 @@ public class Turtle extends GameObject {
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         this.rightSideRun = rightSideRun;
         this.leftSideRun = leftSideRun;
-        yMovementDir = Vector2.ZERO;
+        yMovementDir = Vector2.UP;
+        xMovementDir = Vector2.LEFT;
         whichLegToUse = USING_LEFT;
+        rand = new Random();
+        inTheAir = false;
+        new Transition<>(this,
+                aFloat->transform().setVelocityX(xMovementDir.x()*WALKING_SPEED),
+                0f, 1f,
+                Transition.LINEAR_INTERPOLATOR_FLOAT,
+                TRANSITION_CYCLE,
+                Transition.TransitionType.TRANSITION_LOOP,
+                ()->xMovementDir =  new Vector2(xMovementDir.x()*(-1),0));
     }
 
     /**
-     * in charge of the turtles movments
+     * in charge of the turtles movements
      * @param deltaTime The time elapsed, in seconds, since the last frame. Can
      *                  be used to determine a new position/velocity by multiplying
      *                  this delta with the velocity/acceleration respectively
@@ -61,7 +77,36 @@ public class Turtle extends GameObject {
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
+        setVelocityY();
+        setImage();
+    }
 
+    /**
+     * sets the velocity y of the turtle
+     */
+    private void setVelocityY(){
+        if(rand.nextInt(PERCENT_FOR_JUMP) == INTEGER_REP_JUMP && !inTheAir){
+            transform().setVelocityY(yMovementDir.y()*JUMP_SPEED);
+            inTheAir = true;
+        }
+        else if(transform().getVelocity().y() < FALLING_MAX_SPEED){
+            transform().setVelocityY(getVelocity().y() + GRAVITY_EFFECT);
+        }
+    }
+
+    /**
+     * sets the image of the turtle
+     */
+    private void setImage(){
+        if(whichLegToUse == USING_LEFT){
+            renderer().setRenderable(leftSideRun);
+            whichLegToUse = USING_RIGHT;
+        }
+        else {
+            renderer().setRenderable(rightSideRun);
+            whichLegToUse = USING_LEFT;
+        }
+        renderer().setIsFlippedHorizontally(!(getVelocity().x() > 0));
     }
 
     /**
@@ -76,6 +121,12 @@ public class Turtle extends GameObject {
         super.onCollisionEnter(other, collision);
         if(other instanceof Avatar){
             this.renderer().fadeOut(FADE_OUT_TIME, ()->gameObjects.removeGameObject(this, turtleLayer));
+        }
+        if(collision.getNormal().y() > 0){
+            xMovementDir =  new Vector2(xMovementDir.x()*(-1),0);
+        }
+        else{
+            inTheAir = false;
         }
     }
 }

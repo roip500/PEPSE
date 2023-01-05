@@ -146,6 +146,8 @@ public class PepseGameManager extends GameManager{
                 LEAF_LAYER, true);
         gameObjects().layers().shouldLayersCollide(AVATAR_LAYER,
                 TURTLE_LAYER, true);
+        gameObjects().layers().shouldLayersCollide(LEAF_LAYER,
+                TURTLE_LAYER, false);
         gameObjects().layers().shouldLayersCollide(TREE_TRUNK_LAYER,
                 TURTLE_LAYER, true); //TODO:check if necessary
 
