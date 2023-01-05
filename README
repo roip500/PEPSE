@@ -56,8 +56,8 @@ c - We wanted to use a Counter object for the avatars energy but we were instruc
 
 
 5) Bonuses we implemented:
-a - added a moon and a moon_halo.
+a - added a moon and a moon_halo, and synchronized the day and night with the sun and the moon
 b - we created our avatar based on the character Mario.
-c - animals that walk around
+c - animals that walk, jump
 d - the avatars energy and score are printed on the screen
 e - avatar getting points for colliding with animals
