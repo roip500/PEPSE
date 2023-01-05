@@ -18,11 +18,6 @@ public class NoiseGenerator {
         init();
     }
 
-    public NoiseGenerator() {
-        this.seed = new Random().nextGaussian() * 255;
-        init();
-    }
-
     private void init() {
         // Initialize the permutation array.
         this.p = new int[512];
@@ -55,25 +50,6 @@ public class NoiseGenerator {
 
     }
 
-    public void setSeed(double seed) {
-        this.seed = seed;
-    }
-
-    public double getSeed() {
-        return this.seed;
-    }
-
-    public double noise(double x, double y, double z, int size) {
-        double value = 0.0;
-        double initialSize = size;
-
-        while (size >= 1) {
-            value += smoothNoise((x / size), (y / size), (z / size)) * size;
-            size /= 2.0;
-        }
-
-        return value / initialSize;
-    }
 
     public float noise(float x, float y, float z) {
         float value = 0.0f;
@@ -101,18 +77,6 @@ public class NoiseGenerator {
         return value / initialSize;
     }
 
-    public float noise(double x) {
-        float value = 0.0f;
-        float size = default_size;
-        float initialSize = size;
-
-        while (size >= 1) {
-            value += smoothNoise((x / size), (0f / size), (0f / size)) * size;
-            size /= 2.0;
-        }
-
-        return value/initialSize;
-    }
 
     public double smoothNoise(double x, double y, double z) {
         // Offset each coordinate by the seed value
