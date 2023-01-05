@@ -23,8 +23,8 @@ public class Night {
      * @return game object that represents the sun
      */
     public static GameObject create(GameObjectCollection gameObjectCollection,
-                                    Vector2 windowDimension,
                                     int nightLayer,
+                                    Vector2 windowDimension,
                                     float cycleLength){
         GameObject night = new GameObject(Vector2.ZERO, windowDimension,
                 new RectangleRenderable(Color.BLACK));

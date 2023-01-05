@@ -84,8 +84,8 @@ public class PepseGameManager extends GameManager{
      * creates the sun and it's halo
      */
     private void createSunAndHalo(){
-        GameObject sun = Sun.create(gameObjects(),windowController.getWindowDimensions(),
-                SUN_AND_MOON_LAYER, CYCLE_LENGTH);
+        GameObject sun = Sun.create(gameObjects(),SUN_AND_MOON_LAYER,
+                windowController.getWindowDimensions(), CYCLE_LENGTH);
         SunHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, sun, SUN_HALO_COLOR);
     }
 
@@ -96,15 +96,15 @@ public class PepseGameManager extends GameManager{
         GameObject moon = Moon.create(gameObjects(),windowController.getWindowDimensions(),
                 SUN_AND_MOON_LAYER, CYCLE_LENGTH, imageReader);
         MoonHalo.create(gameObjects(), SUN_AND_MOON_HALO_LAYER, moon, MOON_HALO_COLOR);
-        Night.create(gameObjects(), windowController.getWindowDimensions(),
-                NIGHT_LAYER, CYCLE_LENGTH/2f);
+        Night.create(gameObjects(), NIGHT_LAYER, windowController.getWindowDimensions(),
+                 CYCLE_LENGTH/2f);
     }
 
     /**
      * creates the terrain
      */
     private void createTerrain(){
-        terrain = new Terrain(gameObjects() ,windowController.getWindowDimensions(),SEED);
+        terrain = new Terrain(gameObjects() , GROUND_LAYER, windowController.getWindowDimensions(),SEED);
         terrain.createInRange(worldEdges.getWorldsLeftEdge(), worldEdges.getWorldsRightEdge());
     }
 

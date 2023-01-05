@@ -23,9 +23,8 @@ public class Sun{
      * @param sunLayer layer in the board
      * @return game object that represents the sun
      */
-    public static GameObject create(GameObjectCollection gameObjectCollection,
+    public static GameObject create(GameObjectCollection gameObjectCollection,int sunLayer,
                                     Vector2 windowDimension,
-                                    int sunLayer,
                                     float cycleLength){
         GameObject sun = new GameObject(
                 new Vector2(0, windowDimension.y()),
