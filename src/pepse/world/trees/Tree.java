@@ -7,7 +7,6 @@ import pepse.util.ColorSupplier;
 import pepse.util.NoiseGenerator;
 import pepse.world.Block;
 import pepse.world.GroundHeightCalculator;
-import pepse.world.TreeChecker;
 
 import java.awt.*;
 import java.util.*;

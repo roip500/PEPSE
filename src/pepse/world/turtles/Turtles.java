@@ -6,7 +6,7 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.world.Block;
 import pepse.world.GroundHeightCalculator;
-import pepse.world.TreeChecker;
+import pepse.world.trees.TreeChecker;
 import pepse.world.WorldEdges;
 
 import java.util.*;
