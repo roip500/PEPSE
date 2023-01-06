@@ -7,15 +7,17 @@
     </content>
     <orderEntry type="jdk" jdkName="11" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../3rd party libs/DanoGameLab/DanoGameLab.jar!/" />
+          <root url="file://$MODULE_DIR$/../external_files/DanoGameLab" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/../3rd party libs/DanoGameLab/src" />
+          <root url="file://$MODULE_DIR$/../external_files/DanoGameLab/CodeExamples" />
+          <root url="file://$MODULE_DIR$/../external_files/DanoGameLab/src" />
         </SOURCES>
+        <jarDirectory url="file://$MODULE_DIR$/../external_files/DanoGameLab" recursive="false" />
       </library>
     </orderEntry>
   </component>

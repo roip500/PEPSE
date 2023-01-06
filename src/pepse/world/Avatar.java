@@ -23,7 +23,7 @@ public class Avatar extends GameObject {
     private static final String SEMI_RUN_LEFT_IMAGE_LOCATION = "assets/semi-running-left.png";
     private static final String SEMI_RUN_RIGHT_IMAGE_LOCATION = "assets/semi-running-right.png";
 
-    // global consts:
+    // global const:
     private static final int USING_RIGHT = 3;
     private static final int USING_SEMI_RIGHT = 2;
     private static final int USING_LEFT = 1;
@@ -37,18 +37,17 @@ public class Avatar extends GameObject {
     private static final int POINTS_FOR_HIT = 5;
     private static final String AVATAR_TAG = "avatar";
     private static final String TURTLE_TAG = "turtle";
-    private static Counter energyCounter;
-    private static Counter scoreCounter;
     private static final String TXT_FOR_ENERGY = "ENERGY:";
     private static final String TXT_FOR_SCORE = "SCORE:";
     private static final int AVATARS_ENERGY = 200;
     private static final int SIZE_OF_TXT = 30;
     private static final int LENGTH_OF_TXT_FOR_SCORE = 8;
     private static final int TXT_LOC_Y = SIZE_OF_TXT/2;
-    private static final int TXT_LOC_X = 1280 - SIZE_OF_TXT*LENGTH_OF_TXT_FOR_SCORE;
-
+    private static final int REDUCE_FROM_X_COORDINATION = SIZE_OF_TXT * LENGTH_OF_TXT_FOR_SCORE;
 
     // parameters to be used:
+    private final Counter energyCounter;
+    private final Counter scoreCounter;
     private final int maxEnergy;
     private final Renderable standing;
     private final Renderable flyingUp;
@@ -75,13 +74,15 @@ public class Avatar extends GameObject {
      * @param flyingSides the image that will be used when the avatar flies and moves side-ways
      * @param runLeft the image that will be used when the avatar walks - 1
      * @param runRight the image that will be used when the avatar walks - 2
-     * @param energyCounter counter object that represents the energy the avatar has
      */
     private Avatar(Vector2 topLeftCorner, Vector2 dimensions, Renderable renderable,
                   UserInputListener inputListener, Renderable flyingUp, Renderable flyingSides,
-                  Renderable runLeft, Renderable runRight, danogl.util.Counter energyCounter, Renderable semiRunLeft, Renderable semiRunRight) {
+                  Renderable runLeft, Renderable runRight, Renderable semiRunLeft, Renderable semiRunRight,
+                   Counter scoreCounter, Counter energyCounter) {
         super(topLeftCorner, dimensions, renderable);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
+        this.energyCounter = energyCounter;
+        this.scoreCounter = scoreCounter;
         maxEnergy = energyCounter.value();
         this.inputListener = inputListener;
         this.inTheAir = false;
@@ -97,6 +98,7 @@ public class Avatar extends GameObject {
         this.whichLegToUse = USING_SEMI_LEFT;
         this.setTag(AVATAR_TAG);
     }
+
 
     /**
      * function moves the avatar according to the keyboard
@@ -133,9 +135,10 @@ public class Avatar extends GameObject {
      * sets the velocity of the avatar in the y vector
      */
     private void setVelocityY(){
-        if(inTheAir && inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
+        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
                 inputListener.isKeyPressed(KeyEvent.VK_SHIFT) && energyCounter.value() > 0) {
             flying = true;
+            inTheAir = true;
             energyCounter.decrement();
             yMovementDir = Vector2.UP;
             transform().setVelocityY(yMovementDir.y() * FLY_SPEED);
@@ -227,34 +230,42 @@ public class Avatar extends GameObject {
                                 int layer, Vector2 topLeftCorner,
                                 UserInputListener inputListener,
                                 ImageReader imageReader){
-        Renderable standingImg = imageReader.readImage(STANDING_IMAGE_LOCATION,true);
-        Renderable flyingUpImg = imageReader.readImage(FLYING_UP_IMAGE_LOCATION,true);
-        Renderable flyingSidesImg = imageReader.readImage(FLYING_SIDES_IMAGE_LOCATION,true);
-        Renderable runLeftImg = imageReader.readImage(RUN_LEFT_IMAGE_LOCATION,true);
-        Renderable runRightImg = imageReader.readImage(RUN_RIGHT_IMAGE_LOCATION,true);
-        Renderable semiRunLeftImg = imageReader.readImage(SEMI_RUN_LEFT_IMAGE_LOCATION,true);
-        Renderable semiRunRightImg = imageReader.readImage(SEMI_RUN_RIGHT_IMAGE_LOCATION,true);
-        createCounters(gameObjects);
+        //creating the images:
+        Renderable standingImg = imageReader.readImage
+                (STANDING_IMAGE_LOCATION,true);
+        Renderable flyingUpImg = imageReader.readImage
+                (FLYING_UP_IMAGE_LOCATION,true);
+        Renderable flyingSidesImg = imageReader.readImage
+                (FLYING_SIDES_IMAGE_LOCATION,true);
+        Renderable runLeftImg = imageReader.readImage
+                (RUN_LEFT_IMAGE_LOCATION,true);
+        Renderable runRightImg = imageReader.readImage
+                (RUN_RIGHT_IMAGE_LOCATION,true);
+        Renderable semiRunLeftImg = imageReader.readImage
+                (SEMI_RUN_LEFT_IMAGE_LOCATION,true);
+        Renderable semiRunRightImg = imageReader.readImage
+                (SEMI_RUN_RIGHT_IMAGE_LOCATION,true);
+
+        //creating the counters and adding them to the board:
+        Counter energyCounter = new Counter(AVATARS_ENERGY);
+        GraphicCounter energyCounterObject = new GraphicCounter(energyCounter,
+                new Vector2(0, TXT_LOC_Y),
+                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_ENERGY);
+        gameObjects.addGameObject(energyCounterObject, Layer.UI);
+        Counter scoreCounter = new Counter(0);
+        GraphicCounter scoreCounterObject = new GraphicCounter(scoreCounter,
+                new Vector2(topLeftCorner.x()*2 - REDUCE_FROM_X_COORDINATION, TXT_LOC_Y),
+                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
+        gameObjects.addGameObject(scoreCounterObject, Layer.UI);
+
+        //initializing the avatar:
         Avatar avatar = new Avatar(Vector2.ZERO, new Vector2(AVATAR_SIZE, AVATAR_SIZE),
                 standingImg, inputListener, flyingUpImg, flyingSidesImg, runLeftImg,
-                runRightImg, energyCounter, semiRunLeftImg, semiRunRightImg);
+                runRightImg, semiRunLeftImg, semiRunRightImg, scoreCounter,energyCounter);
         avatar.setCenter(topLeftCorner);
         gameObjects.addGameObject(avatar, layer);
         return avatar;
     }
 
-    /**
-     * creates the energy counter and the score counter and adds them to the screen
-     */
-    private static void createCounters(GameObjectCollection gameObjects){
-        energyCounter = new Counter(AVATARS_ENERGY);
-        GraphicCounter energyCounterObject = new GraphicCounter(energyCounter, new Vector2(0, TXT_LOC_Y),
-                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_ENERGY);
-        gameObjects.addGameObject(energyCounterObject, Layer.UI);
-        scoreCounter = new Counter(0);
-        GraphicCounter scoreCounterObject = new GraphicCounter(scoreCounter,
-                new Vector2(TXT_LOC_X, TXT_LOC_Y),
-                new Vector2(SIZE_OF_TXT, SIZE_OF_TXT), TXT_FOR_SCORE);
-        gameObjects.addGameObject(scoreCounterObject, Layer.UI);
-    }
+
 }

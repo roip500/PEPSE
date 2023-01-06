@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import danogl.collisions.GameObjectCollection;
-import danogl.collisions.Layer;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
@@ -15,7 +14,7 @@ public class Terrain  implements GroundHeightCalculator{
     private static final int TWO_LAYERS = 2;
     private final GameObjectCollection gameObjects;
     private final int extraGroundLayer;
-    private int groundLayer;
+    private final int groundLayer;
     private final Vector2 windowDimensions;
     private static final int TERRAIN_DEPTH = 20;
     public static final int NOISE_MULTIPLIER = 150;
